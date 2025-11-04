@@ -10,11 +10,19 @@ export default function Home() {
     <div className="flex flex-col gap-y-32">
       <Nav />
 
-      <div>
-        <div className="flex gap-x-4">
-          <h1>The most human layer of Ethereum</h1>
-          <span>Claim your worldfair name</span>
-          <Image src="/img/arrow.svg" alt="Arrow" width={100} height={100} />
+      <div className="px-4">
+        <div className="relative flex items-end gap-x-4 pr-8">
+          <h1 className="text-brand-blue-dark text-3xl font-light">
+            The most human layer of Ethereum
+          </h1>
+          <span className="text-brand-grey">Claim your worldfair name</span>
+          <Image
+            src="/img/arrow.svg"
+            alt="Arrow"
+            width={22.5}
+            height={55}
+            className="absolute right-0 bottom-2"
+          />
         </div>
 
         <Carousel />

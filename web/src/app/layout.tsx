@@ -28,7 +28,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* Temporarily scope it down to mobile only */}
+        <div className="sm:border-brand-blue-dark mx-auto sm:max-w-lg sm:border-x">
+          {children}
+        </div>
       </body>
     </html>
   )
