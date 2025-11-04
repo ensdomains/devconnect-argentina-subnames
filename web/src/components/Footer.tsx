@@ -12,7 +12,7 @@ const links = new Map<string, string>([
 export function Footer() {
   return (
     <footer className="bg-brand-blue-dark text-brand-blue-light p-4">
-      <div className="border-t border-brand-blue-light flex flex-col gap-y-6 pt-2">
+      <div className="border-brand-blue-light flex flex-col gap-y-6 border-t pt-2">
         <span>Join the community</span>
 
         <div className="flex flex-col gap-y-4">
@@ -28,7 +28,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex gap-x-4 justify-between">
+        <div className="flex justify-between gap-x-4">
           <span>ENS, Copyright, 2024. All Rights Reserved.</span>
           <Image src="/img/ens-mark.svg" alt="ENS" width={100} height={100} />
         </div>

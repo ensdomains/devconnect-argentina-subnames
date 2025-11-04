@@ -8,10 +8,10 @@ export function Button({ size = 'medium', ...props }: ButtonProps) {
   return (
     <button
       className={cn(
-        'bg-brand-blue text-sm text-brand-grey-2 py-2.5 rounded-md hover:bg-brand-blue-hover',
-        size === 'small' && 'px-4 w-fit',
-        size === 'medium' && 'px-10 w-fit',
-        size === 'large' && 'px-10 w-full',
+        'bg-brand-blue text-brand-grey-2 hover:bg-brand-blue-hover rounded-md py-2.5 text-sm',
+        size === 'small' && 'w-fit px-4',
+        size === 'medium' && 'w-fit px-10',
+        size === 'large' && 'w-full px-10',
         props.className
       )}
       {...props}
