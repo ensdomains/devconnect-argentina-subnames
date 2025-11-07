@@ -31,4 +31,7 @@
   --color-brand-green-light: var(--brand-green-light);
   --color-brand-lapise-dense: var(--brand-lapise-dense);
   --color-brand-lapise-surface: var(--brand-lapise-surface);
+
+  --color-destructive: var(--color-red-500);
+  --color-ring: var(--color-brand-blue);
 }

@@ -2,6 +2,7 @@ import Image from 'next/image'
 
 import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
+import { Input } from '@/components/Input'
 import { Nav } from '@/components/Nav'
 import { Slideshow } from '@/components/Slideshow'
 
@@ -30,7 +31,7 @@ export default function Home() {
         <Slideshow className="mt-4" />
       </div>
 
-      <div className="px-4">
+      <div className="space-y-4 px-4">
         <div className="flex items-end gap-x-8">
           <h2 className="text-brand-blue-dark text-3xl font-light">
             The fair starts with your name.
@@ -39,9 +40,18 @@ export default function Home() {
             Claim your worldfair name
           </span>
         </div>
-        <div>
-          <input />
-          <Button size="small">Claim</Button>
+        <div className="flex items-center gap-x-2">
+          <Input
+            suffix={
+              <span className="text-brand-grey font-medium">
+                .worldfair.eth
+              </span>
+            }
+            aria-invalid={true}
+          />
+          <Button size="small" className="uppercase">
+            Claim
+          </Button>
         </div>
       </div>
 
