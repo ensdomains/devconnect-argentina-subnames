@@ -23,8 +23,8 @@ export function Register() {
           placeholder="nick"
           onChange={(e) => setLabel(e.target.value)}
         />
-        <Button size="small" className="uppercase">
-          Claim
+        <Button size="small" className="uppercase" asChild>
+          <a href={`/greg`}>Claim</a>
         </Button>
       </div>
 
