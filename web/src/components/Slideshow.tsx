@@ -106,9 +106,9 @@ function Card({
         )}
       >
         <div className="flex-none p-1.5">
-          <div className="border-brand-${color}-dark border-t pt-4 pb-6">
-            <h3 className="mb-4 text-xl font-semibold">{title}</h3>
-            <p className="font-light">{description}</p>
+          <div className="border-brand-${color}-dark border-t pt-4 pb-6 tracking-tight">
+            <h3 className="mb-4 text-xl font-medium">{title}</h3>
+            <p className="font-serif">{description}</p>
           </div>
         </div>
         <div

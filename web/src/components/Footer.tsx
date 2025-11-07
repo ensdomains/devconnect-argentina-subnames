@@ -11,16 +11,17 @@ const links = new Map<string, string>([
 
 export function Footer() {
   return (
-    <footer className="bg-brand-blue-dark text-brand-blue-light p-4">
-      <div className="border-brand-blue-light flex flex-col gap-y-6 border-t pt-2">
+    <footer className="bg-brand-blue-dark text-brand-blue-light p-4 py-6 font-mono text-sm font-medium">
+      <div className="border-brand-blue-light border-t pt-2">
         <span>Join the community</span>
 
-        <div className="flex flex-col gap-y-4">
+        <div className="mt-10 mb-18 flex flex-col gap-y-4">
           {Array.from(links.entries()).map(([label, href]) => (
             <a
               key={label}
               href={href}
               target="_blank"
+              className="hover:text-brand-blue-light/80"
               rel="noopener noreferrer"
             >
               {label}
@@ -28,8 +29,8 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex justify-between gap-x-4">
-          <span>ENS, Copyright, 2024. All Rights Reserved.</span>
+        <div className="flex items-end justify-between gap-x-4">
+          <span>ENS, Copyright, 2025. All Rights Reserved.</span>
           <Image src="/img/ens-mark.svg" alt="ENS" width={100} height={100} />
         </div>
       </div>

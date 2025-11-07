@@ -1,16 +1,36 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 
 import './globals.css'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+const abcMarist = localFont({
+  variable: '--font-abc-marist',
+  src: './fonts/ABCMarist-Book.woff2',
+  weight: '400',
+  style: 'regular',
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const abcMonumentGrotesk = localFont({
+  variable: '--font-abc-monument-grotesk',
+  src: [
+    {
+      path: './fonts/ABCMonumentGrotesk-Light.woff2',
+      weight: '300',
+      style: 'light',
+    },
+    {
+      path: './fonts/ABCMonumentGrotesk-Medium.woff2',
+      weight: '500',
+      style: 'medium',
+    },
+  ],
+})
+
+const abcMonumentGroteskMono = localFont({
+  variable: '--font-abc-monument-grotesk-mono',
+  src: './fonts/ABCMonumentGroteskSemi-Mono-Regular.woff2',
+  weight: '400',
+  style: 'regular',
 })
 
 export const metadata: Metadata = {
@@ -24,10 +44,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="en"
+      className={`${abcMarist.variable} ${abcMonumentGrotesk.variable} ${abcMonumentGroteskMono.variable} antialiased`}
+    >
+      <body>
         {/* Temporarily scope it down to mobile only */}
         <div className="sm:border-brand-blue-dark mx-auto overflow-x-hidden sm:max-w-lg sm:border-x">
           {children}

@@ -11,11 +11,13 @@ export default function Home() {
       <Nav />
 
       <div className="px-4">
-        <div className="relative flex items-end gap-x-4 pr-8">
+        <div className="relative flex items-end gap-x-8 pr-6">
           <h1 className="text-brand-blue-dark text-3xl font-light">
             The most human layer of Ethereum
           </h1>
-          <span className="text-brand-grey">Claim your worldfair name</span>
+          <span className="text-brand-grey font-mono">
+            Claim your worldfair name
+          </span>
           <Image
             src="/img/arrow.svg"
             alt="Arrow"
@@ -28,10 +30,14 @@ export default function Home() {
         <Slideshow className="mt-4" />
       </div>
 
-      <div>
-        <div className="flex gap-x-4">
-          <h2>The fair starts with your name.</h2>
-          <span>Claim your worldfair name</span>
+      <div className="px-4">
+        <div className="flex items-end gap-x-8">
+          <h2 className="text-brand-blue-dark text-3xl font-light">
+            The fair starts with your name.
+          </h2>
+          <span className="text-brand-grey font-mono">
+            Claim your worldfair name
+          </span>
         </div>
         <div>
           <input />
