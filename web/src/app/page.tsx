@@ -1,9 +1,9 @@
 import Image from 'next/image'
 
 import { Button } from '@/components/Button'
-import { Carousel } from '@/components/Carousel'
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
+import { Slideshow } from '@/components/Slideshow'
 
 export default function Home() {
   return (
@@ -25,7 +25,7 @@ export default function Home() {
           />
         </div>
 
-        <Carousel />
+        <Slideshow className="mt-4" />
       </div>
 
       <div>
