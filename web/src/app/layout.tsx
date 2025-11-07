@@ -30,9 +30,18 @@ const abcMonumentGrotesk = localFont({
 
 const abcMonumentGroteskMono = localFont({
   variable: '--font-abc-monument-grotesk-mono',
-  src: './fonts/ABCMonumentGroteskSemi-Mono-Regular.woff2',
-  weight: '400',
-  style: 'regular',
+  src: [
+    {
+      path: './fonts/ABCMonumentGroteskSemi-Mono-Regular.woff2',
+      weight: '400',
+      style: 'regular',
+    },
+    {
+      path: './fonts/ABCMonumentGroteskSemi-Mono-Medium.woff2',
+      weight: '500',
+      style: 'medium',
+    },
+  ],
 })
 
 export const metadata: Metadata = {
