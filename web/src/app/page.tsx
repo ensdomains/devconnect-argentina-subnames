@@ -1,9 +1,8 @@
 import Image from 'next/image'
 
-import { Button } from '@/components/Button'
 import { Footer } from '@/components/Footer'
-import { Input } from '@/components/Input'
 import { Nav } from '@/components/Nav'
+import { Register } from '@/components/Register'
 import { Slideshow } from '@/components/Slideshow'
 
 export default function Home() {
@@ -40,19 +39,8 @@ export default function Home() {
             Claim your worldfair name
           </span>
         </div>
-        <div className="flex items-center gap-x-2">
-          <Input
-            suffix={
-              <span className="text-brand-grey font-medium">
-                .worldfair.eth
-              </span>
-            }
-            aria-invalid={true}
-          />
-          <Button size="small" className="uppercase">
-            Claim
-          </Button>
-        </div>
+
+        <Register />
       </div>
 
       <Footer />

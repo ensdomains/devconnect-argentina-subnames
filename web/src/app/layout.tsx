@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 
+import { ClientProviders } from '@/components/ClientProviders'
+
 import './globals.css'
 
 const abcMarist = localFont({
@@ -49,10 +51,12 @@ export default function RootLayout({
       className={`${abcMarist.variable} ${abcMonumentGrotesk.variable} ${abcMonumentGroteskMono.variable} antialiased`}
     >
       <body>
-        {/* Temporarily scope it down to mobile only */}
-        <div className="sm:border-brand-blue-dark mx-auto overflow-x-hidden sm:max-w-lg sm:border-x">
-          {children}
-        </div>
+        <ClientProviders>
+          {/* Temporarily scope it down to mobile only */}
+          <div className="sm:border-brand-blue-dark mx-auto overflow-x-hidden sm:max-w-lg sm:border-x">
+            {children}
+          </div>
+        </ClientProviders>
       </body>
     </html>
   )
