@@ -4,8 +4,12 @@ import { Nav } from '@/components/Nav'
 import { getProfile } from '@/hooks/useProfile'
 import { cn } from '@/lib/utils'
 
-export default async function Page({ params }: { params: { label: string } }) {
-  const { label: _label } = params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ label: string }>
+}) {
+  const { label: _label } = await params
   const profile = await getProfile(_label)
 
   return (
