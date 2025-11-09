@@ -1,23 +1,31 @@
 import {
   Address,
   ContractFunctionExecutionError,
-  ContractFunctionRevertedError,
   Hex,
   InsufficientFundsError,
-  createWalletClient,
+  encodeFunctionData,
   getAddress,
   isAddress,
-  isHex,
+  namehash,
   publicActions,
-  toHex,
+  toCoinType,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { writeContract } from 'viem/actions'
-import { getClient, getPublicClient, getWalletClient } from 'wagmi/actions'
-import { baseSepolia } from 'wagmi/chains'
+import { normalize } from 'viem/ens'
+import { getClient } from 'wagmi/actions'
+import {
+  arbitrum,
+  base,
+  baseSepolia,
+  celo,
+  linea,
+  optimism,
+  scroll,
+} from 'wagmi/chains'
 import { z } from 'zod'
 
-import { REGISTRAR, REGISTRY } from '@/lib/contracts'
+import { REGISTRAR, REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import { wagmiConfig } from '@/lib/wagmi'
 
 import { getSession } from '../../auth/shared'
@@ -35,10 +43,6 @@ const approvedContracts: Address[] = [
 ]
 
 const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
-
-// if (!PRIVATE_KEY) {
-//   throw new Error('RELAYER_PRIVATE_KEY is not set')
-// }
 
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
@@ -60,7 +64,12 @@ export async function POST(req: Request) {
       ...REGISTRAR,
       account: privateKeyToAccount(PRIVATE_KEY),
       functionName: 'register',
-      args: [label, owner, [], BigInt(session.nullifierHashV4)],
+      args: [
+        label,
+        owner,
+        getResolverCalls(label, owner),
+        BigInt(session.nullifierHashV4),
+      ],
     })
 
     const receipt = await client.waitForTransactionReceipt({ hash: tx })
@@ -93,4 +102,27 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
+}
+
+// Set the address for a bunch of chains
+function getResolverCalls(label: string, owner: Address) {
+  const cointypes = [
+    60,
+    toCoinType(base.id),
+    toCoinType(optimism.id),
+    toCoinType(arbitrum.id),
+    toCoinType(scroll.id),
+    toCoinType(linea.id),
+    toCoinType(celo.id),
+  ]
+
+  const node = namehash(normalize(`${label}.worldsfair.eth`))
+
+  return cointypes.map((coinType) =>
+    encodeFunctionData({
+      abi: RESOLVER_ABI,
+      functionName: 'setAddr',
+      args: [node, BigInt(coinType), owner],
+    })
+  )
 }

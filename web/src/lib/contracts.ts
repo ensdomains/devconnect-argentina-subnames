@@ -1,3 +1,5 @@
+import { parseAbi } from 'viem'
+
 export const REGISTRY = {
   address: '0xCA1538e164a56C58C9C7750455a067c13648AF01',
   abi: [
@@ -906,3 +908,8 @@ export const REGISTRAR = {
     },
   ],
 } as const
+
+export const RESOLVER_ABI = parseAbi([
+  'function setAddr(bytes32 node, uint256 coinType, bytes a) external',
+  'function setText(bytes32 node, string key, string value) external',
+])

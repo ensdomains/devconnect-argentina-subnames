@@ -2,11 +2,9 @@
 
 import { connect } from '@parcnet-js/app-connector'
 import { Loader2 } from 'lucide-react'
-import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
-import { encodeFunctionData } from 'viem'
 import { useAccount, useConnect } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
@@ -14,7 +12,7 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
-import { REGISTRAR } from '@/lib/contracts'
+import { useNullifier } from '@/hooks/useNullifier'
 
 export function Register() {
   // Local state
@@ -24,6 +22,7 @@ export function Register() {
 
   // Zupass
   const auth = useAuth()
+  const hasRegistered = useNullifier(auth.data?.nullifier)
   const [isZupassLoading, setIsZupassLoading] = useState(false)
 
   // Wallet
@@ -69,12 +68,20 @@ export function Register() {
     )
   }
 
+  if (hasRegistered.data) {
+    return (
+      <Button size="large" disabled>
+        Go to Your Name
+      </Button>
+    )
+  }
+
   return (
     <div>
       <form className="flex items-center gap-x-2">
         <Input
           suffix={
-            <span className="text-brand-grey font-medium">.worldfair.eth</span>
+            <span className="text-brand-grey font-medium">.worldsfair.eth</span>
           }
           placeholder="nick"
           onChange={(e) => setLabel(e.target.value)}
@@ -87,6 +94,7 @@ export function Register() {
                 size="small"
                 type="submit"
                 className="uppercase"
+                disabled={!isAvailable.data === true}
                 onClick={async (e) => {
                   e.preventDefault()
 
@@ -111,9 +119,7 @@ export function Register() {
                     return
                   }
 
-                  const receipt = await res.json()
-                  redirect(`/${debouncedLabel}`)
-                  console.log(receipt)
+                  hasRegistered.refetch()
                 }}
               >
                 Claim

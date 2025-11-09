@@ -13,7 +13,10 @@ export function useAuth() {
         return { authed: false }
       }
 
-      return { authed: true, nullifier: BigInt(json.nullifierHashV4) }
+      return {
+        authed: true,
+        nullifier: BigInt(json.nullifierHashV4),
+      }
     },
   })
 }

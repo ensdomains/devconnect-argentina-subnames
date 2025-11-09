@@ -5,7 +5,7 @@ export async function getProfile(_label: string) {
 
   return {
     label,
-    name: `${label}.worldfair.eth`,
+    name: `${label}.worldsfair.eth`,
     texts: {
       description: 'I like baking and building apps on web3 protocols.',
       avatar: 'https://ens-api.gregskril.com/avatar/gregskril.eth?width=256',
