@@ -7,28 +7,11 @@ import {
   gpcVerify,
 } from '@pcd/gpc'
 import { getCurveFromName } from 'ffjavascript'
-import { getIronSession } from 'iron-session'
-import { cookies } from 'next/headers'
 import path from 'node:path'
 import superjson from 'superjson'
 
-import { IRON_SESSION_COOKIE_NAME, ZUPASS_PROOF_REQUEST } from './constants'
-import { SessionData } from './types'
-
-const IRON_SESSION_PASSWORD = process.env.IRON_SESSION_PASSWORD!
-
-if (!IRON_SESSION_PASSWORD) {
-  throw new Error('IRON_SESSION_PASSWORD is not set')
-} else if (IRON_SESSION_PASSWORD.length < 32) {
-  throw new Error('IRON_SESSION_PASSWORD must be at least 32 characters long')
-}
-
-async function getSession() {
-  return getIronSession<SessionData>(await cookies(), {
-    password: IRON_SESSION_PASSWORD,
-    cookieName: IRON_SESSION_COOKIE_NAME,
-  })
-}
+import { ZUPASS_PROOF_REQUEST } from './constants'
+import { getSession } from './shared'
 
 export async function POST(req: Request) {
   const body = superjson.parse<{

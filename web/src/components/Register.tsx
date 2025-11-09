@@ -1,33 +1,31 @@
 'use client'
 
-import { Zapp, connect } from '@parcnet-js/app-connector'
-import { ticketProofRequest } from '@parcnet-js/ticket-spec'
-import { useMutation } from '@tanstack/react-query'
+import { connect } from '@parcnet-js/app-connector'
 import { Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
+import { useAccount, useConnect } from 'wagmi'
 
-import { ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
+import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
 
-const zapp: Zapp = {
-  name: 'ENS',
-  permissions: {
-    REQUEST_PROOF: { collections: ['Tickets'] },
-    READ_POD: { collections: ['Tickets'] },
-    READ_PUBLIC_IDENTIFIERS: {},
-  },
-}
-
 export function Register() {
+  // Local state
   const [label, setLabel] = useState('')
   const [debouncedLabel] = useDebounce(label, 500)
   const isAvailable = useAvailable(debouncedLabel)
+
+  // Zupass
   const auth = useAuth()
+  const [isZupassLoading, setIsZupassLoading] = useState(false)
+
+  // Wallet
+  const { connect: connectWallet, connectors } = useConnect()
+  const { address } = useAccount()
 
   if (!auth.data) {
     return (
@@ -35,10 +33,12 @@ export function Register() {
         <Button
           size="large"
           onClick={async () => {
+            setIsZupassLoading(true)
+
             // This is a client component and the element is defined in layout.tsx so it will always be present
             const connector = document.getElementById('zupass-app-connector')!
             const zupassRes = await connect(
-              zapp,
+              ZAPP,
               connector,
               'https://zupass.org'
             )
@@ -54,9 +54,11 @@ export function Register() {
               body: superjson.stringify(proveRes),
             })
 
-            auth.refetch()
+            setIsZupassLoading(false)
+            await auth.refetch()
           }}
         >
+          {isZupassLoading && <Loader2 className="animate-spin" size={16} />}
           Connect Zupass
         </Button>
         <Label>A Devconnect exclusive!</Label>
@@ -66,7 +68,7 @@ export function Register() {
 
   return (
     <div>
-      <div className="flex items-center gap-x-2">
+      <form className="flex items-center gap-x-2">
         <Input
           suffix={
             <span className="text-brand-grey font-medium">.worldfair.eth</span>
@@ -74,10 +76,30 @@ export function Register() {
           placeholder="nick"
           onChange={(e) => setLabel(e.target.value)}
         />
-        <Button size="small" className="uppercase" asChild>
-          <a href={`/greg`}>Claim</a>
-        </Button>
-      </div>
+
+        {(() => {
+          if (address) {
+            return (
+              <Button size="small" type="submit" className="uppercase">
+                Claim
+              </Button>
+            )
+          }
+
+          return (
+            <Button
+              size="small"
+              type="button"
+              className="uppercase"
+              onClick={() => {
+                connectWallet({ connector: connectors[0] })
+              }}
+            >
+              Connect
+            </Button>
+          )
+        })()}
+      </form>
 
       <Label>
         {isAvailable.isLoading && (
