@@ -14,13 +14,11 @@ export function useAvailable(label: string) {
     queryFn: async () => {
       const client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
 
-      const available = await client.readContract({
+      return client.readContract({
         ...REGISTRAR,
         functionName: 'available',
         args: [label],
       })
-
-      return available
     },
   })
 }

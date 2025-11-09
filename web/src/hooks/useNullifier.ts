@@ -17,13 +17,13 @@ export function useNullifier(nullifier?: bigint) {
 
       const client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
 
-      const used = await client.readContract({
+      const label = await client.readContract({
         ...REGISTRAR,
         functionName: 'nullifiers',
         args: [nullifier],
       })
 
-      return used
+      return label ?? null
     },
   })
 }

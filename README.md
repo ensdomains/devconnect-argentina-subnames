@@ -9,4 +9,4 @@ A "Registry" is an NFT collection that represents the ownership of a subname. A 
 | Chain        | Contract  | Address                                                                                                                       |
 | ------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | Base Sepolia | Registry  | [0xCA1538e164a56C58C9C7750455a067c13648AF01](https://sepolia.basescan.org/address/0xCA1538e164a56C58C9C7750455a067c13648AF01) |
-| Base Sepolia | Registrar | [0x03E2314ECf6075537B6a481009a30334fEFCef3a](https://sepolia.basescan.org/address/0x03E2314ECf6075537B6a481009a30334fEFCef3a) |
+| Base Sepolia | Registrar | [0x4D56236B70fF29Fa2395C8BCC6F812f9CB46a71a](https://sepolia.basescan.org/address/0x4D56236B70fF29Fa2395C8BCC6F812f9CB46a71a) |

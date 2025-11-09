@@ -21,8 +21,8 @@ contract Registrar is Ownable {
     /// @notice Base node for the parent registry
     bytes32 private immutable BASE_NODE;
 
-    /// @notice List of used nullifiers to enforce 1 registration per ticket holder
-    mapping(uint256 => bool) public nullifiers;
+    /// @notice Nullifiers and the label they were used to register
+    mapping(uint256 => string) public nullifiers;
 
     /// @notice Initializes the registrar with a registry contract
     /// @param _registry Address of the L2Registry contract
@@ -42,7 +42,7 @@ contract Registrar is Ownable {
         bytes[] calldata data,
         uint256 nullifier
     ) external onlyOwner {
-        if (nullifiers[nullifier]) {
+        if (bytes(nullifiers[nullifier]).length > 0) {
             revert NullifierAlreadyUsed(nullifier);
         }
 
@@ -50,7 +50,7 @@ contract Registrar is Ownable {
             revert NotAvailable(keccak256(bytes(label)));
         }
 
-        nullifiers[nullifier] = true;
+        nullifiers[nullifier] = label;
 
         // Register the name
         REGISTRY.createSubnode(BASE_NODE, label, owner, data);

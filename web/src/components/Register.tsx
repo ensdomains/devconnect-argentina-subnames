@@ -2,6 +2,7 @@
 
 import { connect } from '@parcnet-js/app-connector'
 import { Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
@@ -22,7 +23,7 @@ export function Register() {
 
   // Zupass
   const auth = useAuth()
-  const hasRegistered = useNullifier(auth.data?.nullifier)
+  const registeredLabel = useNullifier(auth.data?.nullifier)
   const [isZupassLoading, setIsZupassLoading] = useState(false)
 
   // Wallet
@@ -68,10 +69,10 @@ export function Register() {
     )
   }
 
-  if (hasRegistered.data) {
+  if (registeredLabel.data) {
     return (
-      <Button size="large" disabled>
-        Go to Your Name
+      <Button size="large" asChild>
+        <Link href={`/${registeredLabel.data}`}>Go to Your Name</Link>
       </Button>
     )
   }
@@ -119,7 +120,7 @@ export function Register() {
                     return
                   }
 
-                  hasRegistered.refetch()
+                  registeredLabel.refetch()
                 }}
               >
                 Claim
