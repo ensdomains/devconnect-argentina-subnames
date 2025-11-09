@@ -2,17 +2,13 @@
 
 import { Zapp, connect } from '@parcnet-js/app-connector'
 import { ticketProofRequest } from '@parcnet-js/ticket-spec'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
 
-import {
-  ZUPASS_EVENT_ID,
-  ZUPASS_NULLIFIER,
-  ZUPASS_PROOF_REQUEST,
-  ZUPASS_SIGNER,
-} from '@/app/api/auth/constants'
+import { ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useAvailable } from '@/hooks/useAvailable'
@@ -46,9 +42,6 @@ export function Register() {
               connector,
               'https://zupass.org'
             )
-
-            const identityCommitment =
-              await zupassRes.identity.getSemaphoreV4Commitment()
 
             const proveRes = await zupassRes.gpc.prove({
               request: ZUPASS_PROOF_REQUEST.schema,
