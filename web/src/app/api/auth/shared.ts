@@ -6,11 +6,11 @@ import { SessionData } from './types'
 
 const IRON_SESSION_PASSWORD = process.env.IRON_SESSION_PASSWORD!
 
-if (!IRON_SESSION_PASSWORD) {
-  throw new Error('IRON_SESSION_PASSWORD is not set')
-} else if (IRON_SESSION_PASSWORD.length < 32) {
-  throw new Error('IRON_SESSION_PASSWORD must be at least 32 characters long')
-}
+// if (!IRON_SESSION_PASSWORD) {
+//   throw new Error('IRON_SESSION_PASSWORD is not set')
+// } else if (IRON_SESSION_PASSWORD.length < 32) {
+//   throw new Error('IRON_SESSION_PASSWORD must be at least 32 characters long')
+// }
 
 export async function getSession() {
   return getIronSession<SessionData>(await cookies(), {

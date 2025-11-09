@@ -7,7 +7,7 @@ import { Slideshow } from '@/components/Slideshow'
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-y-32">
+    <div className="flex flex-col gap-y-16">
       <Nav />
 
       <div className="px-4">

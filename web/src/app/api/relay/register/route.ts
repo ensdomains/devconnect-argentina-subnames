@@ -36,9 +36,9 @@ const approvedContracts: Address[] = [
 
 const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
 
-if (!PRIVATE_KEY) {
-  throw new Error('RELAYER_PRIVATE_KEY is not set')
-}
+// if (!PRIVATE_KEY) {
+//   throw new Error('RELAYER_PRIVATE_KEY is not set')
+// }
 
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {

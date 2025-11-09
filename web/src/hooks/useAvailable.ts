@@ -20,7 +20,7 @@ export function useAvailable(label: string) {
         args: [label],
       })
 
-      return { available }
+      return available
     },
   })
 }
