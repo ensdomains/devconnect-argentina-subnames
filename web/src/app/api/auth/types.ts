@@ -1,4 +1,3 @@
 export type SessionData = {
-  asdf?: string
-  // Add other session properties here as needed
+  nullifierHashV4: string
 }

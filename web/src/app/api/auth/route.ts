@@ -12,12 +12,23 @@ import { cookies } from 'next/headers'
 import path from 'node:path'
 import superjson from 'superjson'
 
-import {
-  IRON_SESSION_COOKIE_NAME,
-  IRON_SESSION_PASSWORD,
-  ZUPASS_PROOF_REQUEST,
-} from './constants'
+import { IRON_SESSION_COOKIE_NAME, ZUPASS_PROOF_REQUEST } from './constants'
 import { SessionData } from './types'
+
+const IRON_SESSION_PASSWORD = process.env.IRON_SESSION_PASSWORD!
+
+if (!IRON_SESSION_PASSWORD) {
+  throw new Error('IRON_SESSION_PASSWORD is not set')
+} else if (IRON_SESSION_PASSWORD.length < 32) {
+  throw new Error('IRON_SESSION_PASSWORD must be at least 32 characters long')
+}
+
+async function getSession() {
+  return getIronSession<SessionData>(await cookies(), {
+    password: IRON_SESSION_PASSWORD,
+    cookieName: IRON_SESSION_COOKIE_NAME,
+  })
+}
 
 export async function POST(req: Request) {
   const body = superjson.parse<{
@@ -68,25 +79,20 @@ export async function POST(req: Request) {
     )
   }
 
-  const session = await getIronSession<SessionData>(await cookies(), {
-    password: IRON_SESSION_PASSWORD,
-    cookieName: IRON_SESSION_COOKIE_NAME,
-  })
-  session.asdf = 'asdf'
+  if (!revealedClaims.owner?.nullifierHashV4) {
+    // This should be unreachable and is just for type safety
+    throw new Error('NullifierHashV4 is empty')
+  }
+
+  const session = await getSession()
+  revealedClaims.owner
+  session.nullifierHashV4 = revealedClaims.owner.nullifierHashV4.toString()
   await session.save()
 
-  return Response.json(
-    {
-      message: 'Proof verified',
-    },
-    { status: 200 }
-  )
+  return Response.json({ message: 'Proof verified' }, { status: 200 })
 }
 
 export async function GET() {
-  const session = await getIronSession<SessionData>(await cookies(), {
-    password: IRON_SESSION_PASSWORD,
-    cookieName: IRON_SESSION_COOKIE_NAME,
-  })
+  const session = await getSession()
   return Response.json(session)
 }

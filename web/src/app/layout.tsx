@@ -59,7 +59,7 @@ export default function RootLayout({
       lang="en"
       className={`${abcMarist.variable} ${abcMonumentGrotesk.variable} ${abcMonumentGroteskMono.variable} antialiased`}
     >
-      <body>
+      <body className="bg-white">
         <ClientProviders>
           {/* Temporarily scope it down to mobile only */}
           <div className="sm:border-brand-blue-dark mx-auto overflow-x-hidden sm:max-w-lg sm:border-x">

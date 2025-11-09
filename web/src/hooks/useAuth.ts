@@ -7,7 +7,13 @@ export function useAuth() {
     queryKey: ['auth'],
     queryFn: async () => {
       const response = await fetch('/api/auth')
-      return response.json() as Promise<SessionData>
+      const json = (await response.json()) as SessionData
+
+      if (!json.nullifierHashV4) {
+        return false
+      }
+
+      return true
     },
   })
 }

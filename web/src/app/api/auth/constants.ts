@@ -21,9 +21,3 @@ export const ZUPASS_PROOF_REQUEST = ticketProofRequest({
 })
 
 export const IRON_SESSION_COOKIE_NAME = 'zupass-session'
-
-export const IRON_SESSION_PASSWORD = process.env.IRON_SESSION_PASSWORD!
-
-if (!IRON_SESSION_PASSWORD || IRON_SESSION_PASSWORD.length < 32) {
-  throw new Error('IRON_SESSION_PASSWORD is not set or is too short')
-}

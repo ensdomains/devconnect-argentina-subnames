@@ -11,6 +11,7 @@ import { useDebounce } from 'use-debounce'
 import { ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
 
 const zapp: Zapp = {
@@ -26,10 +27,9 @@ export function Register() {
   const [label, setLabel] = useState('')
   const [debouncedLabel] = useDebounce(label, 500)
   const isAvailable = useAvailable(debouncedLabel)
+  const auth = useAuth()
 
-  const isAuthed = false
-
-  if (!isAuthed) {
+  if (!auth.data) {
     return (
       <div>
         <Button
@@ -53,6 +53,8 @@ export function Register() {
               method: 'POST',
               body: superjson.stringify(proveRes),
             })
+
+            auth.refetch()
           }}
         >
           Connect Zupass
