@@ -1,66 +1,12 @@
-## Foundry
+## Worldsfair.eth Subnames at Devconnect Argentina
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Devconnect ticket holders can register a free subname of worldsfair.eth! Ticket ownership is verified via Zupass, and all onchain transactions are sponsored.
 
-Foundry consists of:
+This is built on top of [Durin](https://durin.dev/), a framework for deploying ENS subnames on L2s.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+A "Registry" is an NFT collection that represents the ownership of a subname. A "Registrar" is a layer of indirection that allows for custom logic to be applied to the registration process.
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+| Chain        | Contract  | Address                                                                                                                       |
+| ------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Base Sepolia | Registry  | [0xCA1538e164a56C58C9C7750455a067c13648AF01](https://sepolia.basescan.org/address/0xCA1538e164a56C58C9C7750455a067c13648AF01) |
+| Base Sepolia | Registrar | [0x03E2314ECf6075537B6a481009a30334fEFCef3a](https://sepolia.basescan.org/address/0x03E2314ECf6075537B6a481009a30334fEFCef3a) |

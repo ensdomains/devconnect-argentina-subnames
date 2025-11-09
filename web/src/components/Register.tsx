@@ -2,9 +2,11 @@
 
 import { connect } from '@parcnet-js/app-connector'
 import { Loader2 } from 'lucide-react'
+import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
+import { encodeFunctionData } from 'viem'
 import { useAccount, useConnect } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
@@ -12,6 +14,7 @@ import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
+import { REGISTRAR } from '@/lib/contracts'
 
 export function Register() {
   // Local state
@@ -27,7 +30,7 @@ export function Register() {
   const { connect: connectWallet, connectors } = useConnect()
   const { address } = useAccount()
 
-  if (!auth.data) {
+  if (!auth.data?.authed) {
     return (
       <div>
         <Button
@@ -80,7 +83,39 @@ export function Register() {
         {(() => {
           if (address) {
             return (
-              <Button size="small" type="submit" className="uppercase">
+              <Button
+                size="small"
+                type="submit"
+                className="uppercase"
+                onClick={async (e) => {
+                  e.preventDefault()
+
+                  if (!auth.data?.nullifier) {
+                    alert('This should be unreachable')
+                    return
+                  }
+
+                  const res = await fetch('/api/relay/register', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      label: debouncedLabel,
+                      owner: address,
+                    }),
+                  })
+
+                  if (!res.ok) {
+                    alert('Failed to claim name')
+                    return
+                  }
+
+                  const receipt = await res.json()
+                  redirect(`/${debouncedLabel}`)
+                  console.log(receipt)
+                }}
+              >
                 Claim
               </Button>
             )

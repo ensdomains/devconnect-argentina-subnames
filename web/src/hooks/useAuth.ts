@@ -10,10 +10,10 @@ export function useAuth() {
       const json = (await response.json()) as SessionData
 
       if (!json.nullifierHashV4) {
-        return false
+        return { authed: false }
       }
 
-      return true
+      return { authed: true, nullifier: BigInt(json.nullifierHashV4) }
     },
   })
 }

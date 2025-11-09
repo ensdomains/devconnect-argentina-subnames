@@ -1,9 +1,10 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { base } from 'viem/chains'
+import { baseSepolia } from 'viem/chains'
 import { getPublicClient } from 'wagmi/actions'
 
+import { REGISTRAR } from '@/lib/contracts'
 import { wagmiConfig } from '@/lib/wagmi'
 
 export function useAvailable(label: string) {
@@ -11,12 +12,15 @@ export function useAvailable(label: string) {
     enabled: !!label,
     queryKey: ['available', label],
     queryFn: async () => {
-      getPublicClient(wagmiConfig, { chainId: base.id })
+      const client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
 
-      // Simulate RPC request
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      const available = await client.readContract({
+        ...REGISTRAR,
+        functionName: 'available',
+        args: [label],
+      })
 
-      return true
+      return { available }
     },
   })
 }
