@@ -65,6 +65,8 @@ export default function RootLayout({
           <div className="sm:border-brand-blue-dark mx-auto overflow-x-hidden sm:max-w-lg sm:border-x">
             {children}
           </div>
+
+          <div id="zupass-app-connector" />
         </ClientProviders>
       </body>
     </html>

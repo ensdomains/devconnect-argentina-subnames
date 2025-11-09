@@ -10,24 +10,33 @@
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "zupass-artifacts": "cp -r node_modules/@pcd/proto-pod-gpc-artifacts/. ./src/lib/artifacts/",
+    "postinstall": "pnpm zupass-artifacts"
   },
   "dependencies": {
     "@ensdomains/address-encoder": "^1.1.4",
     "@opennextjs/cloudflare": "^1.11.0",
+    "@parcnet-js/app-connector": "^1.1.10",
+    "@parcnet-js/ticket-spec": "^1.1.9",
+    "@pcd/gpc": "^0.4.1",
+    "@pcd/proto-pod-gpc-artifacts": "^0.13.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.90.7",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
+    "iron-session": "^8.0.4",
     "lucide-react": "^0.553.0",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "superjson": "^2.2.5",
     "tailwind-merge": "^3.3.1",
     "use-debounce": "^10.0.6",
     "viem": "^2.38.6",
-    "wagmi": "^2.19.2"
+    "wagmi": "^2.19.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

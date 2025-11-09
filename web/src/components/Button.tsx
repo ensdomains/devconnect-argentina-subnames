@@ -19,7 +19,7 @@ export function Button({
   return (
     <Comp
       className={cn(
-        'bg-brand-blue text-brand-grey-2 hover:bg-brand-blue-hover rounded-md py-2.5 font-mono text-sm font-medium',
+        'bg-brand-blue hover:bg-brand-blue-hover rounded-md py-2.5 font-mono text-sm font-medium text-white',
         'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive outline-none focus-visible:ring-2',
         size === 'small' && 'w-fit px-4',
         size === 'medium' && 'w-fit px-10',
