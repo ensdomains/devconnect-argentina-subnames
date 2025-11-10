@@ -8,24 +8,16 @@ import {
   isAddress,
   namehash,
   publicActions,
-  toCoinType,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { writeContract } from 'viem/actions'
 import { normalize } from 'viem/ens'
 import { getClient } from 'wagmi/actions'
-import {
-  arbitrum,
-  base,
-  baseSepolia,
-  celo,
-  linea,
-  optimism,
-  scroll,
-} from 'wagmi/chains'
+import { baseSepolia } from 'wagmi/chains'
 import { z } from 'zod'
 
 import { REGISTRAR, REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
+import { EVM_COIN_TYPES } from '@/lib/records'
 import { wagmiConfig } from '@/lib/wagmi'
 
 import { getSession } from '../../auth/shared'
@@ -106,19 +98,9 @@ export async function POST(req: Request) {
 
 // Set the address for a bunch of chains
 function getResolverCalls(label: string, owner: Address) {
-  const cointypes = [
-    60,
-    toCoinType(base.id),
-    toCoinType(optimism.id),
-    toCoinType(arbitrum.id),
-    toCoinType(scroll.id),
-    toCoinType(linea.id),
-    toCoinType(celo.id),
-  ]
-
   const node = namehash(normalize(`${label}.worldsfair.eth`))
 
-  return cointypes.map((coinType) =>
+  return EVM_COIN_TYPES.map((coinType) =>
     encodeFunctionData({
       abi: RESOLVER_ABI,
       functionName: 'setAddr',

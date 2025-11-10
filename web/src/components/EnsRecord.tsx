@@ -1,6 +1,10 @@
-import { getCoderByCoinType } from '@ensdomains/address-encoder'
+'use client'
 
-import { cn } from '@/lib/utils'
+import { getCoderByCoinType } from '@ensdomains/address-encoder'
+import { CheckIcon, CopyIcon } from 'lucide-react'
+import { useState } from 'react'
+
+import { cn, truncateAddress } from '@/lib/utils'
 
 type TextRecord = {
   type: 'social' | 'text'
@@ -26,30 +30,45 @@ export function EnsRecord({
   value,
   className,
 }: EnsRecordProps) {
+  const [isCopied, setIsCopied] = useState(false)
+
+  const handleCopy = (value: string) => {
+    navigator.clipboard.writeText(value)
+    setIsCopied(true)
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 2000)
+  }
   if (!value) return null
 
   if (type === 'text') {
     return (
-      <div className={cn('flex flex-col gap-y-1', className)}>
+      <div className={cn('flex flex-col', className)}>
         <span className="text-brand-grey text-xs font-medium lowercase">
           {label}
         </span>
 
-        <span className="text-brand-lapise-dense">{value}</span>
+        <span className="text-brand-lapise-dense text-sm">{value}</span>
       </div>
     )
   }
 
   if (type === 'social') {
-    const { url, image } = getSocialData(label, value)
+    const url = getSocialUrl(label, value)
 
     return (
       <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-brand-lapise-dense text-sm lowercase"
+        className="text-brand-lapise-dense flex items-center gap-x-2 text-sm lowercase"
       >
+        <img
+          src={`/img/social/${label}.svg`}
+          alt={label}
+          width={16}
+          height={16}
+        />
         @{value}
       </a>
     )
@@ -61,11 +80,34 @@ export function EnsRecord({
     return (
       <>
         <div className="flex items-center gap-x-4">
-          <span className="text-brand-grey text-xs font-medium uppercase">
-            {coder.name}
-          </span>
+          {/* <span className="text-brand-grey w-12 text-xs font-medium uppercase">
+            {/* <span className="text-brand-grey w-12 text-xs font-medium uppercase">
+              {coder.name}
+            </span> */}
+          <img
+            src={`/img/address/${cointype}.svg`}
+            alt={coder.name}
+            width={22}
+            height={22}
+          />
 
-          <span>{value.slice(0, 10)}...</span>
+          <button
+            className="text-brand-lapise-dense flex items-center gap-x-2 text-sm lowercase"
+            onClick={() => handleCopy(value)}
+          >
+            {truncateAddress(value)}
+            {isCopied && (
+              <div className="flex items-center gap-x-1">
+                <span
+                  className="text-brand-lapise-dense font-mono uppercase"
+                  style={{ WebkitTextSizeAdjust: 'none' }}
+                >
+                  Copied
+                </span>
+                <CheckIcon className="h-4 w-4" />
+              </div>
+            )}
+          </button>
         </div>
       </>
     )
@@ -74,17 +116,15 @@ export function EnsRecord({
   return null
 }
 
-function getSocialData(
-  key: string,
-  value: string
-): { url: string; image?: string } {
-  if (key === 'com.twitter') {
-    return { url: `https://x.com/${value}` }
+function getSocialUrl(key: string, value: string) {
+  switch (key) {
+    case 'com.twitter':
+      return `https://x.com/${value}`
+    case 'com.github':
+      return `https://github.com/${value}`
+    case 'org.telegram':
+      return `https://t.me/${value}`
   }
 
-  if (key === 'com.github') {
-    return { url: `https://github.com/${value}` }
-  }
-
-  return { url: value }
+  return value
 }
