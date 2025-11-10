@@ -9,8 +9,6 @@ export const EVM_COIN_TYPES = [
   BigInt(2147525868), // Celo
 ]
 
-console.log(EVM_COIN_TYPES)
-
 // These will all be fetched for the profile page
 export const ALL_COIN_TYPES = [
   ...EVM_COIN_TYPES,

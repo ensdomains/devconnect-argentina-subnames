@@ -4,12 +4,24 @@ import { cn } from '@/lib/utils'
 
 type InputProps = {
   suffix?: React.ReactNode
+  label?: string
 } & React.InputHTMLAttributes<HTMLInputElement>
 
 // TODO: Make the suffix a static element so that the input can't overlap with it
-function Input({ className, type, suffix, ...props }: InputProps) {
+function Input({
+  className,
+  type = 'text',
+  suffix,
+  label,
+  ...props
+}: InputProps) {
   return (
     <div className="relative w-full">
+      {label && (
+        <label className="text-brand-grey text-xs font-medium lowercase">
+          {label}
+        </label>
+      )}
       <input
         type={type}
         data-slot="input"
