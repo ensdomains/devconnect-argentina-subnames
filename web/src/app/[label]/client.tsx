@@ -228,7 +228,7 @@ export function Client({ profile }: { profile: Profile }) {
                     variant="secondary"
                     onClick={() => disconnectWallet()}
                   >
-                    Disconnect Wallet
+                    Disconnect
                   </Button>
                 </ActionButton>
               </>
