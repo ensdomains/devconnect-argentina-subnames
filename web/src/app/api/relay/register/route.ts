@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
 // Set the address for a bunch of chains
 function getResolverCalls(label: string, owner: Address) {
-  const node = namehash(normalize(`${label}.worldsfair.eth`))
+  const node = namehash(normalize(`${label}.worldfair.eth`))
 
   return EVM_COIN_TYPES.map((coinType) =>
     encodeFunctionData({

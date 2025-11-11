@@ -1,7 +1,7 @@
 import { parseAbi } from 'viem'
 
 export const REGISTRY = {
-  address: '0xCA1538e164a56C58C9C7750455a067c13648AF01',
+  address: '0x39e628489e0ddcb1c4cc72c1c5447c1136dcda7a',
   abi: [
     { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
     {
@@ -782,7 +782,7 @@ export const REGISTRY = {
 } as const
 
 export const REGISTRAR = {
-  address: '0x306650175703769d13AC04A2411055091Df1C02C',
+  address: '0xc9FEc1384068768cD3f500550EfaDA5a0bA56635',
   abi: [
     {
       inputs: [

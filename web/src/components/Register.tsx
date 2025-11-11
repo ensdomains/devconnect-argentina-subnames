@@ -82,7 +82,7 @@ export function Register() {
       <form className="flex items-center gap-x-2">
         <Input
           suffix={
-            <span className="text-brand-grey font-medium">.worldsfair.eth</span>
+            <span className="text-brand-grey font-medium">.worldfair.eth</span>
           }
           placeholder="nick"
           onChange={(e) => setLabel(e.target.value)}

@@ -13,7 +13,7 @@ import { wagmiConfig } from '@/lib/wagmi'
 
 export async function getProfile(_label: string) {
   const label = normalize(_label)
-  const name = `${label}.worldsfair.eth`
+  const name = `${label}.worldfair.eth`
 
   const l1Client = getPublicClient(wagmiConfig, { chainId: sepolia.id })
   const l2Client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })

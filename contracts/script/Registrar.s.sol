@@ -25,7 +25,7 @@ contract RegistrarScript is Script {
         vm.startBroadcast();
 
         registrar = new Registrar(
-            vm.envAddress("L2_REGISTRY_ADDRESS"), // Durin L2Registry for worldsfair.eth on Base Sepolia
+            vm.envAddress("L2_REGISTRY_ADDRESS"), // Durin L2Registry for worldfair.eth on Base Sepolia
             vm.envAddress("OWNER_ADDRESS") // New account to sponsor transactions
         );
 
