@@ -36,12 +36,10 @@ contract Registrar is Ownable {
     /// @param label The label to register (e.g. "name" for "name.eth")
     /// @param owner The address that will own the name
     /// @param data Multicall data to pass to the resolver
-    function register(
-        string calldata label,
-        address owner,
-        bytes[] calldata data,
-        uint256 nullifier
-    ) external onlyOwner {
+    function register(string calldata label, address owner, bytes[] calldata data, uint256 nullifier)
+        external
+        onlyOwner
+    {
         if (bytes(nullifiers[nullifier]).length > 0) {
             revert NullifierAlreadyUsed(nullifier);
         }
