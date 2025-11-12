@@ -5,7 +5,7 @@ import { useLogout, useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { Address, encodeFunctionData, namehash, toHex } from 'viem'
+import { encodeFunctionData, namehash, toHex } from 'viem'
 import { baseSepolia } from 'viem/chains'
 import {
   useSwitchChain,

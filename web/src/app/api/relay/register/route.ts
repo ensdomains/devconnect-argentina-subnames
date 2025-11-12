@@ -17,6 +17,7 @@ import { getClient } from 'wagmi/actions'
 import { baseSepolia } from 'wagmi/chains'
 import { z } from 'zod'
 
+import { BLOCKLIST } from '@/lib/blocklist'
 import { REGISTRAR, REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import { EVM_COIN_TYPES } from '@/lib/records'
 import { wagmiConfig } from '@/lib/wagmi'
@@ -24,16 +25,9 @@ import { wagmiConfig } from '@/lib/wagmi'
 import { getSession } from '../../auth/shared'
 
 const registerSchema = z.object({
-  label: z.string(),
+  label: z.string().refine((label) => normalize(label)),
   owner: z.string().refine((address) => isAddress(address)),
 })
-
-const approvedContracts: Address[] = [
-  REGISTRAR.address,
-  REGISTRY.address,
-  '0x0000000000D8e504002cC26E3Ec46D81971C1664', // L2 Reverse Registrar
-  '0x00000BeEF055f7934784D6d81b6BC86665630dbA', // L2 Reverse Registrar (testnet)
-]
 
 const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
 
@@ -42,6 +36,10 @@ export async function POST(req: Request) {
   const body = await req.json()
   const { label, owner: _owner } = registerSchema.parse(body)
   const owner = getAddress(_owner)
+
+  if (BLOCKLIST.has(label)) {
+    return Response.json({ message: 'That name is reserved.' }, { status: 400 })
+  }
 
   const session = await getSession()
   if (!session.nullifierHashV4) {
@@ -71,12 +69,15 @@ export async function POST(req: Request) {
     const ethBalance = await client.getBalance({ address: owner })
     if (ethBalance === BigInt(0)) {
       try {
-        console.log('Sending ETH to cover gas on profile configuration')
-        sendTransaction(client, {
+        const transferTx = await sendTransaction(client, {
           account: privateKeyToAccount(PRIVATE_KEY),
           to: owner,
           value: parseEther('0.000005'),
         })
+        console.log(
+          'Sent ETH to cover gas on profile configuration',
+          transferTx
+        )
       } catch (error) {
         // Silently failing is fine here because the main transaction still succeeded
         console.error(error)
@@ -120,7 +121,7 @@ export async function POST(req: Request) {
 
 // Set the address for a bunch of chains
 function getResolverCalls(label: string, owner: Address) {
-  const node = namehash(normalize(`${label}.worldfair.eth`))
+  const node = namehash(`${label}.worldfair.eth`)
 
   return EVM_COIN_TYPES.map((coinType) =>
     encodeFunctionData({

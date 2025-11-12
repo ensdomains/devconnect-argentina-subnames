@@ -72,8 +72,8 @@ export function Slideshow({ className }: { className?: string }) {
           <Image
             src="/img/carousel/green/horizontal.svg"
             alt="Ownership"
-            width={675}
-            height={282}
+            width={308}
+            height={141}
           />
         </Card>
       </CarouselContent>
