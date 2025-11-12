@@ -1,10 +1,9 @@
 'use client'
 
-import { getCoderByCoinType } from '@ensdomains/address-encoder'
 import { CheckIcon } from 'lucide-react'
 import { useState } from 'react'
 
-import { CHAIN_MAP } from '@/lib/records'
+import { getChainName } from '@/lib/records'
 import { cn, truncateAddress } from '@/lib/utils'
 
 type TextRecord = {
@@ -49,7 +48,18 @@ export function EnsRecord({
           {label}
         </span>
 
-        <span className="text-brand-lapise-dense text-sm">{value}</span>
+        {label === 'Website' ? (
+          <a
+            href={value}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-brand-lapise-dense w-fit text-sm"
+          >
+            {value}
+          </a>
+        ) : (
+          <span className="text-brand-lapise-dense w-fit text-sm">{value}</span>
+        )}
       </div>
     )
   }
@@ -76,14 +86,14 @@ export function EnsRecord({
   }
 
   if (type === 'address') {
-    const coder = getCoderByCoinType(cointype)
+    const chainName = getChainName(BigInt(cointype))
 
     return (
       <>
         <div className="flex items-center gap-x-4">
           <img
             src={`/img/address/${cointype}.svg`}
-            alt={coder.name}
+            alt={chainName}
             width={22}
             height={22}
           />
@@ -92,7 +102,7 @@ export function EnsRecord({
             className="text-brand-lapise-dense flex items-center gap-x-2 text-sm"
             onClick={() => handleCopy(value)}
           >
-            {isCopied ? truncateAddress(value) : getChainName(cointype)}
+            {isCopied ? truncateAddress(value) : chainName}
             {isCopied && (
               <div className="flex items-center gap-x-1">
                 <span
@@ -124,8 +134,4 @@ function getSocialUrl(key: string, value: string) {
   }
 
   return value
-}
-
-function getChainName(cointype: number) {
-  return CHAIN_MAP.get(BigInt(cointype)) || `Chain ${cointype}`
 }

@@ -1,6 +1,5 @@
 'use client'
 
-import { getCoderByCoinType } from '@ensdomains/address-encoder'
 import { useLogout, useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
@@ -22,7 +21,10 @@ import { REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import {
   ALL_COIN_TYPES,
   GENERIC_TEXT_KEYS,
+  GENERIC_TEXT_LABELS,
   SOCIAL_TEXT_KEYS,
+  SOCIAL_TEXT_LABELS,
+  getChainName,
 } from '@/lib/records'
 import { cn } from '@/lib/utils'
 
@@ -135,13 +137,26 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
           if (isEditMode) {
             return (
               <>
-                <form onSubmit={handleSaveEdits} id="edit-profile">
+                <form
+                  onSubmit={handleSaveEdits}
+                  id="edit-profile"
+                  className="flex flex-col gap-y-1"
+                >
                   {[...GENERIC_TEXT_KEYS, ...SOCIAL_TEXT_KEYS].map((key) => (
                     <Input
                       key={key}
                       name={`text:${key}`}
                       defaultValue={profile.texts[key]}
-                      label={key}
+                      label={
+                        GENERIC_TEXT_LABELS.get(key)?.label ??
+                        SOCIAL_TEXT_LABELS.get(key)?.label ??
+                        key
+                      }
+                      placeholder={
+                        GENERIC_TEXT_LABELS.get(key)?.placeholder ??
+                        SOCIAL_TEXT_LABELS.get(key)?.placeholder ??
+                        ''
+                      }
                     />
                   ))}
 
@@ -150,7 +165,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                       key={cointype}
                       name={`address:${cointype}`}
                       defaultValue={profile.addresses[cointype.toString()]}
-                      label={getCoderByCoinType(Number(cointype)).name}
+                      label={getChainName(cointype)}
                     />
                   ))}
                 </form>
@@ -164,6 +179,13 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                 type="text"
                 label="Description"
                 value={profile.texts.description}
+                className="col-span-2"
+              />
+
+              <EnsRecord
+                type="text"
+                label="Website"
+                value={profile.texts.url}
                 className="col-span-2"
               />
 
