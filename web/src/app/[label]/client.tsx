@@ -111,7 +111,14 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
 
   return (
     <>
-      <main className="bg-brand-dust flex flex-1 flex-col gap-y-6 px-4 py-6">
+      <main
+        className="bg-brand-dust flex flex-1 flex-col gap-y-6 px-4 py-6"
+        style={{
+          backgroundImage: 'url(/img/profile-pattern.svg)',
+          backgroundBlendMode: 'luminosity',
+          backgroundSize: '25.5px 25.5px',
+        }}
+      >
         <div className="flex items-center gap-x-4">
           {profile.texts?.['avatar'] ? (
             <img
