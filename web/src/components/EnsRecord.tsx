@@ -1,9 +1,10 @@
 'use client'
 
 import { getCoderByCoinType } from '@ensdomains/address-encoder'
-import { CheckIcon, CopyIcon } from 'lucide-react'
+import { CheckIcon } from 'lucide-react'
 import { useState } from 'react'
 
+import { CHAIN_MAP } from '@/lib/records'
 import { cn, truncateAddress } from '@/lib/utils'
 
 type TextRecord = {
@@ -80,10 +81,6 @@ export function EnsRecord({
     return (
       <>
         <div className="flex items-center gap-x-4">
-          {/* <span className="text-brand-grey w-12 text-xs font-medium uppercase">
-            {/* <span className="text-brand-grey w-12 text-xs font-medium uppercase">
-              {coder.name}
-            </span> */}
           <img
             src={`/img/address/${cointype}.svg`}
             alt={coder.name}
@@ -92,10 +89,10 @@ export function EnsRecord({
           />
 
           <button
-            className="text-brand-lapise-dense flex items-center gap-x-2 text-sm lowercase"
+            className="text-brand-lapise-dense flex items-center gap-x-2 text-sm"
             onClick={() => handleCopy(value)}
           >
-            {truncateAddress(value)}
+            {isCopied ? truncateAddress(value) : getChainName(cointype)}
             {isCopied && (
               <div className="flex items-center gap-x-1">
                 <span
@@ -127,4 +124,8 @@ function getSocialUrl(key: string, value: string) {
   }
 
   return value
+}
+
+function getChainName(cointype: number) {
+  return CHAIN_MAP.get(BigInt(cointype)) || `Chain ${cointype}`
 }

@@ -39,6 +39,13 @@ export function ClientProviders({ children }: React.PropsWithChildren) {
         config={{
           appName: 'ENS',
         }}
+        paraModalConfig={{
+          theme: {
+            foregroundColor: '#011a25',
+          },
+          oAuthMethods: [],
+          authLayout: ['AUTH:FULL', 'EXTERNAL:FULL'],
+        }}
       >
         {children}
       </ParaProvider>

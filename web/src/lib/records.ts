@@ -1,13 +1,15 @@
 // These will all be set at registration time
-export const EVM_COIN_TYPES = [
-  BigInt(60), // ETH
-  BigInt(2147492101), // Base
-  BigInt(2147483658), // Optimism
-  BigInt(2147525809), // Arbitrum
-  BigInt(2148018000), // Scroll
-  BigInt(2147542792), // Linea
-  BigInt(2147525868), // Celo
-]
+export const CHAIN_MAP = new Map<bigint, string>([
+  [BigInt(60), 'Ethereum'],
+  [BigInt(2147492101), 'Base'],
+  [BigInt(2147483658), 'OP Mainnet'],
+  [BigInt(2147525809), 'Arbitrum'],
+  [BigInt(2148018000), 'Scroll'],
+  [BigInt(2147542792), 'Linea'],
+  [BigInt(2147525868), 'Celo'],
+])
+
+export const EVM_COIN_TYPES = Array.from(CHAIN_MAP.keys())
 
 // These will all be fetched for the profile page
 export const ALL_COIN_TYPES = [
