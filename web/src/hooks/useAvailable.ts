@@ -2,9 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { baseSepolia } from 'viem/chains'
+import { normalize } from 'viem/ens'
 import { getPublicClient } from 'wagmi/actions'
 
-import { BLOCKLIST } from '@/lib/blocklist'
+import { nameFilter } from '@/lib/blocklist'
 import { REGISTRAR } from '@/lib/contracts'
 import { wagmiConfig } from '@/lib/wagmi'
 
@@ -13,7 +14,7 @@ export function useAvailable(label: string) {
     enabled: !!label,
     queryKey: ['available', label],
     queryFn: async () => {
-      if (BLOCKLIST.has(label)) {
+      if (nameFilter.isProfane(label)) {
         return false
       }
 
@@ -22,7 +23,7 @@ export function useAvailable(label: string) {
       return client.readContract({
         ...REGISTRAR,
         functionName: 'available',
-        args: [label],
+        args: [normalize(label)],
       })
     },
   })

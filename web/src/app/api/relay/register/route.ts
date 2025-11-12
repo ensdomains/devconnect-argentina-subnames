@@ -17,7 +17,7 @@ import { getClient } from 'wagmi/actions'
 import { baseSepolia } from 'wagmi/chains'
 import { z } from 'zod'
 
-import { BLOCKLIST } from '@/lib/blocklist'
+import { nameFilter } from '@/lib/blocklist'
 import { REGISTRAR, REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import { EVM_COIN_TYPES } from '@/lib/records'
 import { wagmiConfig } from '@/lib/wagmi'
@@ -37,8 +37,11 @@ export async function POST(req: Request) {
   const { label, owner: _owner } = registerSchema.parse(body)
   const owner = getAddress(_owner)
 
-  if (BLOCKLIST.has(label)) {
-    return Response.json({ message: 'That name is reserved.' }, { status: 400 })
+  if (nameFilter.isProfane(label)) {
+    return Response.json(
+      { message: 'That name is not allowed.' },
+      { status: 400 }
+    )
   }
 
   const session = await getSession()

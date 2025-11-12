@@ -1,6 +1,8 @@
+import { Filter } from 'bad-words'
+
 // Modified version of Basenames premint list
 // https://github.com/base/basenames/blob/47af3b976dd318337a1176c50fd5203b847e07ec/script/premint/output.csv
-export const BLOCKLIST = new Set([
+const BLOCKLIST = [
   'coinbase-inc',
   'coinbase-global',
   'coinbase-pro',
@@ -1728,4 +1730,7 @@ export const BLOCKLIST = new Set([
   'ethereumr1',
   'mega',
   'megaeth',
-])
+]
+
+export const nameFilter = new Filter()
+nameFilter.addWords(...BLOCKLIST)
