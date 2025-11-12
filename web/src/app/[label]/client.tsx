@@ -1,6 +1,6 @@
 'use client'
 
-import { useLogout, useModal } from '@getpara/react-sdk'
+import { useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -16,6 +16,7 @@ import { Button } from '@/components/Button'
 import { EnsRecord } from '@/components/EnsRecord'
 import { Input } from '@/components/Input'
 import { useAccount } from '@/hooks/useAccount'
+import { useDisconnect } from '@/hooks/useDisconnect'
 import { Profile, useProfile } from '@/hooks/useProfile'
 import { REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import {
@@ -31,7 +32,7 @@ import { cn } from '@/lib/utils'
 export function Client({ profile: _serverProfile }: { profile: Profile }) {
   const { address, isEmbedded } = useAccount()
   const { openModal } = useModal()
-  const { logout: disconnectWallet } = useLogout()
+  const disconnect = useDisconnect()
   const { switchChain } = useSwitchChain()
   const [isEditMode, setIsEditMode] = useState(false)
   const tx = useWriteContract()
@@ -284,7 +285,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                     type="button"
                     className="uppercase"
                     variant="secondary"
-                    onClick={() => disconnectWallet()}
+                    onClick={() => disconnect()}
                   >
                     Disconnect
                   </Button>
@@ -322,7 +323,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                       if (!address) {
                         openModal()
                       } else {
-                        disconnectWallet()
+                        disconnect()
                       }
                     }}
                   >
