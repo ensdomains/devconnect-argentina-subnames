@@ -1,5 +1,6 @@
 'use client'
 
+import { useModal } from '@getpara/react-sdk'
 import { connect } from '@parcnet-js/app-connector'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
@@ -7,7 +8,7 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
-import { useAccount, useConnect } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
@@ -28,7 +29,7 @@ export function Register() {
   const [isZupassLoading, setIsZupassLoading] = useState(false)
 
   // Wallet
-  const { connect: connectWallet, connectors } = useConnect()
+  const { openModal } = useModal()
   const { address } = useAccount()
 
   // Registration mutation
@@ -154,9 +155,7 @@ export function Register() {
               size="small"
               type="button"
               className="uppercase"
-              onClick={() => {
-                connectWallet({ connector: connectors[0] })
-              }}
+              onClick={() => openModal()}
             >
               Connect
             </Button>

@@ -1,16 +1,47 @@
 'use client'
 
+import { Environment, ParaProvider } from '@getpara/react-sdk'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider } from 'wagmi'
 
-import { wagmiConfig } from '@/lib/wagmi'
+import { chains } from '@/lib/wagmi'
 
 const queryClient = new QueryClient()
 
 export function ClientProviders({ children }: React.PropsWithChildren) {
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
+    <QueryClientProvider client={queryClient}>
+      <ParaProvider
+        paraClientConfig={{
+          apiKey: process.env.NEXT_PUBLIC_PARA_API_KEY!,
+          env:
+            process.env.NODE_ENV === 'production'
+              ? Environment.PROD
+              : Environment.DEV,
+        }}
+        externalWalletConfig={{
+          wallets: [
+            'RAINBOW',
+            'METAMASK',
+            'COINBASE',
+            'PHANTOM',
+            'WALLETCONNECT',
+          ],
+          evmConnector: {
+            config: {
+              chains,
+              ssr: true,
+            },
+          },
+          walletConnect: {
+            projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_ID || '',
+          },
+        }}
+        config={{
+          appName: 'ENS',
+        }}
+      >
+        {children}
+      </ParaProvider>
+    </QueryClientProvider>
   )
 }

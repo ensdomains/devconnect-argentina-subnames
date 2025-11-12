@@ -1,3 +1,4 @@
+import '@getpara/react-sdk/styles.css'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Toaster } from 'react-hot-toast'

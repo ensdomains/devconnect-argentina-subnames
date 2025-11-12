@@ -1,6 +1,7 @@
 'use client'
 
 import { getCoderByCoinType } from '@ensdomains/address-encoder'
+import { useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -29,7 +30,7 @@ import { cn } from '@/lib/utils'
 
 export function Client({ profile: _serverProfile }: { profile: Profile }) {
   const { address } = useAccount()
-  const { connect: connectWallet, connectors } = useConnect()
+  const { openModal } = useModal()
   const { disconnect: disconnectWallet } = useDisconnect()
   const { switchChain } = useSwitchChain()
   const [isEditMode, setIsEditMode] = useState(false)
@@ -278,7 +279,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                     variant="secondary"
                     onClick={() => {
                       if (!address) {
-                        connectWallet({ connector: connectors[0] })
+                        openModal()
                       } else {
                         disconnectWallet()
                       }
