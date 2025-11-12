@@ -7,16 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv ./cloudflare-env.d.ts",
     "format": "prettier --write .",
     "zupass-artifacts": "cp -r node_modules/@pcd/proto-pod-gpc-artifacts/. ./public/zupass-artifacts/",
     "postinstall": "pnpm zupass-artifacts"
   },
   "dependencies": {
     "@ensdomains/address-encoder": "^1.1.4",
-    "@opennextjs/cloudflare": "^1.11.0",
     "@parcnet-js/app-connector": "^1.1.10",
     "@parcnet-js/ticket-spec": "^1.1.9",
     "@pcd/gpc": "^0.4.1",
