@@ -1,6 +1,7 @@
 'use client'
 
 import { connect } from '@parcnet-js/app-connector'
+import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -29,6 +30,34 @@ export function Register() {
   // Wallet
   const { connect: connectWallet, connectors } = useConnect()
   const { address } = useAccount()
+
+  // Registration mutation
+  const registerMutation = useMutation({
+    mutationFn: async ({ label, owner }: { label: string; owner: string }) => {
+      const res = await fetch('/api/relay/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          label,
+          owner,
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to claim name')
+      }
+
+      return res.json()
+    },
+    onSuccess: () => {
+      registeredLabel.refetch()
+    },
+    onError: () => {
+      alert('Failed to claim name')
+    },
+  })
 
   if (!auth.data?.authed) {
     return (
@@ -95,7 +124,9 @@ export function Register() {
                 size="small"
                 type="submit"
                 className="uppercase"
-                disabled={!isAvailable.data === true}
+                disabled={
+                  !isAvailable.data === true || registerMutation.isPending
+                }
                 onClick={async (e) => {
                   e.preventDefault()
 
@@ -104,25 +135,15 @@ export function Register() {
                     return
                   }
 
-                  const res = await fetch('/api/relay/register', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      label: debouncedLabel,
-                      owner: address,
-                    }),
+                  registerMutation.mutate({
+                    label: debouncedLabel,
+                    owner: address,
                   })
-
-                  if (!res.ok) {
-                    alert('Failed to claim name')
-                    return
-                  }
-
-                  registeredLabel.refetch()
                 }}
               >
+                {registerMutation.isPending && (
+                  <Loader2 className="animate-spin" size={16} />
+                )}
                 Claim
               </Button>
             )

@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { erc721Abi, namehash } from 'viem'
 import { baseSepolia, sepolia } from 'viem/chains'
 import { normalize } from 'viem/ens'
@@ -10,6 +11,15 @@ import {
   SOCIAL_TEXT_KEYS,
 } from '@/lib/records'
 import { wagmiConfig } from '@/lib/wagmi'
+
+export function useProfile(_label: string) {
+  return useQuery({
+    queryKey: ['profile', _label],
+    queryFn: async () => {
+      return getProfile(_label)
+    },
+  })
+}
 
 export async function getProfile(_label: string) {
   const label = normalize(_label)

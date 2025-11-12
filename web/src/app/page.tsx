@@ -18,20 +18,22 @@ export default function Home() {
           <span className="text-brand-grey font-mono">
             Claim your worldfair name
           </span>
-          <Image
-            src="/img/arrow.svg"
-            alt="Arrow"
-            width={22.5}
-            height={55}
-            className="absolute right-0 bottom-2"
-          />
+          <a href="#register" className="absolute right-0 bottom-2">
+            <Image
+              src="/img/arrow.svg"
+              alt="Arrow"
+              width={22.5}
+              height={55}
+              // className="absolute right-0 bottom-2"
+            />
+          </a>
         </div>
 
         <Slideshow className="mt-4" />
       </div>
 
       <div className="space-y-4 px-4">
-        <div className="flex items-end gap-x-8">
+        <div className="flex items-end gap-x-8" id="register">
           <h2 className="text-brand-blue-dark text-3xl font-light">
             The fair starts with your name.
           </h2>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { Toaster } from 'react-hot-toast'
 
 import { ClientProviders } from '@/components/ClientProviders'
 
@@ -57,7 +58,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${abcMarist.variable} ${abcMonumentGrotesk.variable} ${abcMonumentGroteskMono.variable} antialiased`}
+      className={`${abcMarist.variable} ${abcMonumentGrotesk.variable} ${abcMonumentGroteskMono.variable} scroll-smooth antialiased`}
     >
       <body className="bg-white">
         <ClientProviders>
@@ -67,6 +68,7 @@ export default function RootLayout({
           </div>
 
           <div id="zupass-app-connector" />
+          <Toaster position="top-center" />
         </ClientProviders>
       </body>
     </html>

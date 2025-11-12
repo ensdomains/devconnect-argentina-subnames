@@ -2,7 +2,8 @@
 
 import { getCoderByCoinType } from '@ensdomains/address-encoder'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { encodeFunctionData, namehash, toHex } from 'viem'
 import { baseSepolia } from 'viem/chains'
 import {
@@ -17,7 +18,7 @@ import {
 import { Button } from '@/components/Button'
 import { EnsRecord } from '@/components/EnsRecord'
 import { Input } from '@/components/Input'
-import { Profile } from '@/hooks/useProfile'
+import { Profile, useProfile } from '@/hooks/useProfile'
 import { REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import {
   ALL_COIN_TYPES,
@@ -26,7 +27,7 @@ import {
 } from '@/lib/records'
 import { cn } from '@/lib/utils'
 
-export function Client({ profile }: { profile: Profile }) {
+export function Client({ profile: _serverProfile }: { profile: Profile }) {
   const { address } = useAccount()
   const { connect: connectWallet, connectors } = useConnect()
   const { disconnect: disconnectWallet } = useDisconnect()
@@ -34,6 +35,21 @@ export function Client({ profile }: { profile: Profile }) {
   const [isEditMode, setIsEditMode] = useState(false)
   const tx = useWriteContract()
   const receipt = useWaitForTransactionReceipt({ hash: tx.data })
+
+  // Profile should default to the server profile but get updated in real time
+  const { data: _clientProfile, refetch: refetchProfile } = useProfile(
+    _serverProfile.label
+  )
+  const profile = _clientProfile ?? _serverProfile
+
+  // Exit editing mode after a successful transaction
+  useEffect(() => {
+    if (receipt.isSuccess) {
+      refetchProfile()
+      setIsEditMode(false)
+      toast.success('Profile updated')
+    }
+  }, [receipt.isSuccess])
 
   async function handleSaveEdits(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
