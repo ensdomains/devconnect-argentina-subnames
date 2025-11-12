@@ -40,13 +40,13 @@ export function Slideshow({ className }: { className?: string }) {
           description="Keep your identity consistent across all services and platforms effortlessly. Say goodbye to juggling multiple usernames."
         >
           <div className="grid w-[270px] grid-cols-2 items-center justify-center gap-1 *:w-full">
-            <Image
+            {/* <Image
               className="col-span-2"
               src="/img/carousel/magenta/horizontal.svg"
               alt="Profile page mockup"
               width={270}
               height={165}
-            />
+            /> */}
 
             <Image
               src="/img/carousel/magenta/vertical-1.svg"
@@ -70,10 +70,10 @@ export function Slideshow({ className }: { className?: string }) {
           description="No more confusing hex addresses. Your ENS name is easy to remember, easy to share."
         >
           <Image
-            src="/img/carousel/green/vertical.svg"
+            src="/img/carousel/green/horizontal.svg"
             alt="Ownership"
-            width={150}
-            height={320}
+            width={675}
+            height={282}
           />
         </Card>
       </CarouselContent>

@@ -5,6 +5,7 @@ import { connect } from '@parcnet-js/app-connector'
 import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import superjson from 'superjson'
@@ -32,6 +33,7 @@ export function Register() {
   // Wallet
   const { openModal } = useModal()
   const { address } = useAccount()
+  const router = useRouter()
 
   // Registration mutation
   const registerMutation = useMutation({
@@ -56,8 +58,8 @@ export function Register() {
       return json
     },
     onSuccess: () => {
-      toast.success('Name registered')
-      registeredLabel.refetch()
+      toast.success('Name registered, redirecting...')
+      router.push(`/${debouncedLabel}?mode=edit`)
     },
     onError: (error) => {
       toast.error(error.message)

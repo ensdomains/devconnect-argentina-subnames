@@ -50,6 +50,10 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
     }
   }, [receipt.isSuccess])
 
+  // TODO: Jump straight into edit mode if the user is the owner and they come straight from registration
+  // Then remove the query param
+  useEffect(() => {}, [])
+
   async function handleSaveEdits(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.target as HTMLFormElement)
@@ -89,7 +93,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
     )
 
     if (!setTextCalls.length && !setAddrCalls.length) {
-      alert('No changes to save')
+      setIsEditMode(false)
       return
     }
 
@@ -105,7 +109,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
 
   return (
     <>
-      <main className="bg-brand-blue-light flex flex-1 flex-col gap-y-6 px-4 py-6">
+      <main className="bg-brand-dust flex flex-1 flex-col gap-y-6 px-4 py-6">
         <div className="flex items-center gap-x-4">
           {profile.texts?.['avatar'] ? (
             <img
@@ -293,7 +297,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                       }
                     }}
                   >
-                    {address ? 'Disconnect' : 'Connect Wallet'}
+                    {address ? 'Disconnect' : 'Connect'}
                   </Button>
                 </ActionButton>
               </>
