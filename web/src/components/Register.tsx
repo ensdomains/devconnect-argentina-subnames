@@ -6,13 +6,14 @@ import { useMutation } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
+import { toast } from 'react-hot-toast'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
-import { useAccount } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
+import { useAccount } from '@/hooks/useAccount'
 import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
 import { useNullifier } from '@/hooks/useNullifier'
@@ -46,17 +47,20 @@ export function Register() {
         }),
       })
 
+      const json = await res.json()
       if (!res.ok) {
-        throw new Error('Failed to claim name')
+        // Get the error message from the response
+        throw new Error(json.message)
       }
 
-      return res.json()
+      return json
     },
     onSuccess: () => {
+      toast.success('Name registered')
       registeredLabel.refetch()
     },
-    onError: () => {
-      alert('Failed to claim name')
+    onError: (error) => {
+      toast.error(error.message)
     },
   })
 

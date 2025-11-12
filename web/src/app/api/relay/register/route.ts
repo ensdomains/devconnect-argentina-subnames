@@ -7,10 +7,11 @@ import {
   getAddress,
   isAddress,
   namehash,
+  parseEther,
   publicActions,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { writeContract } from 'viem/actions'
+import { sendTransaction, writeContract } from 'viem/actions'
 import { normalize } from 'viem/ens'
 import { getClient } from 'wagmi/actions'
 import { baseSepolia } from 'wagmi/chains'
@@ -66,6 +67,22 @@ export async function POST(req: Request) {
 
     const receipt = await client.waitForTransactionReceipt({ hash: tx })
 
+    // If the user doesn't have any ETH, send a tiny amount to cover the gas on profile configuration
+    const ethBalance = await client.getBalance({ address: owner })
+    if (ethBalance === BigInt(0)) {
+      try {
+        console.log('Sending ETH to cover gas on profile configuration')
+        sendTransaction(client, {
+          account: privateKeyToAccount(PRIVATE_KEY),
+          to: owner,
+          value: parseEther('0.000005'),
+        })
+      } catch (error) {
+        // Silently failing is fine here because the main transaction still succeeded
+        console.error(error)
+      }
+    }
+
     if (receipt.status === 'reverted') {
       return Response.json(
         {
@@ -82,7 +99,12 @@ export async function POST(req: Request) {
     })
   } catch (error) {
     if (error instanceof ContractFunctionExecutionError) {
-      return Response.json({ message: error.message }, { status: 500 })
+      let message = 'Failed to register name'
+
+      if (error.message.includes('NullifierAlreadyUsed')) {
+        message = 'Your ticket has already been used to register a name.'
+      }
+      return Response.json({ message }, { status: 500 })
     }
 
     if (error instanceof InsufficientFundsError) {

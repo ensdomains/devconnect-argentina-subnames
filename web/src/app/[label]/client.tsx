@@ -1,16 +1,13 @@
 'use client'
 
 import { getCoderByCoinType } from '@ensdomains/address-encoder'
-import { useModal } from '@getpara/react-sdk'
+import { useLogout, useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { encodeFunctionData, namehash, toHex } from 'viem'
+import { Address, encodeFunctionData, namehash, toHex } from 'viem'
 import { baseSepolia } from 'viem/chains'
 import {
-  useAccount,
-  useConnect,
-  useDisconnect,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -19,6 +16,7 @@ import {
 import { Button } from '@/components/Button'
 import { EnsRecord } from '@/components/EnsRecord'
 import { Input } from '@/components/Input'
+import { useAccount } from '@/hooks/useAccount'
 import { Profile, useProfile } from '@/hooks/useProfile'
 import { REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
 import {
@@ -29,9 +27,9 @@ import {
 import { cn } from '@/lib/utils'
 
 export function Client({ profile: _serverProfile }: { profile: Profile }) {
-  const { address } = useAccount()
+  const { address, isEmbedded } = useAccount()
   const { openModal } = useModal()
-  const { disconnect: disconnectWallet } = useDisconnect()
+  const { logout: disconnectWallet } = useLogout()
   const { switchChain } = useSwitchChain()
   const [isEditMode, setIsEditMode] = useState(false)
   const tx = useWriteContract()
@@ -217,11 +215,21 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                       type="submit"
                       form="edit-profile"
                     >
-                      {tx.isPending
-                        ? 'Confirm in wallet'
-                        : tx.data && !receipt.isSuccess
-                          ? 'Saving...'
-                          : 'Save'}
+                      {(() => {
+                        if (tx.isPending) {
+                          if (isEmbedded) {
+                            return 'Saving...'
+                          }
+
+                          return 'Confirm in wallet'
+                        }
+
+                        if (tx.data && !receipt.isSuccess) {
+                          return 'Saving...'
+                        }
+
+                        return 'Save'
+                      })()}
                     </Button>
                   ) : (
                     <Button
