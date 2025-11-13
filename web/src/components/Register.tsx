@@ -11,7 +11,7 @@ import { toast } from 'react-hot-toast'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
 import { Hex, parseSignature, serializeSignature } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { normalize, toCoinType } from 'viem/ens'
 import { encodePacked, keccak256 } from 'viem/utils'
 import { useSignMessage } from 'wagmi'
@@ -166,9 +166,8 @@ export function Register() {
                     return
                   }
 
-                  // const sigExpiry = Math.floor(Date.now() / 1000) + 3600 - 12 // 1 hour - 1 block
-                  const sigExpiry = 1763058617
-                  const coinTypes = [BigInt(toCoinType(baseSepolia.id))]
+                  const sigExpiry = Math.floor(Date.now() / 1000) + 3600 - 12 // 1 hour - 1 block
+                  const coinTypes = [BigInt(toCoinType(base.id))]
                   const sigContents = encodePacked(
                     [
                       'address',

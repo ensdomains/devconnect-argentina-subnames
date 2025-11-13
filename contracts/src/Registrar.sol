@@ -15,27 +15,28 @@ contract Registrar is Ownable {
     /// @param owner The owner of the newly registered name
     event NameRegistered(string indexed label, address indexed owner);
 
-    /// @notice Reference to the target registry contract
+    /// @notice Target registry contract
     IL2Registry public immutable REGISTRY;
 
-    /// @notice Base node for the parent registry
+    /// @notice Node of the parent name
+    /// @dev namehash of `REGISTRY.name()`
     bytes32 private immutable BASE_NODE;
 
-    /// @notice Nullifiers and the label they were used to register
+    /// @notice Zupass nullifiers and the label they were used to register (1 per ticket)
     mapping(uint256 => string) public nullifiers;
 
-    /// @notice Initializes the registrar with a registry contract
     /// @param _registry Address of the L2Registry contract
-    constructor(address _registry, address _owner) Ownable(_owner) {
-        IL2Registry reg = IL2Registry(_registry);
-        REGISTRY = reg;
-        BASE_NODE = reg.baseNode();
+    /// @param _owner Relayer address that can register names
+    constructor(IL2Registry _registry, address _owner) Ownable(_owner) {
+        REGISTRY = _registry;
+        BASE_NODE = _registry.baseNode();
     }
 
     /// @notice Registers a new name
-    /// @param label The label to register (e.g. "name" for "name.eth")
+    /// @param label The label to register (e.g. "sub" for "sub.name.eth")
     /// @param owner The address that will own the name
     /// @param data Multicall data to pass to the resolver
+    /// @param nullifier The Zupass nullifier
     function register(string calldata label, address owner, bytes[] calldata data, uint256 nullifier)
         external
         onlyOwner
@@ -49,8 +50,6 @@ contract Registrar is Ownable {
         }
 
         nullifiers[nullifier] = label;
-
-        // Register the name
         REGISTRY.createSubnode(BASE_NODE, label, owner, data);
         emit NameRegistered(label, owner);
     }
@@ -58,7 +57,6 @@ contract Registrar is Ownable {
     /// @notice Checks if a given label is available for registration
     /// @dev Uses try-catch to handle the ERC721NonexistentToken error
     /// @param label The label to check availability for
-    /// @return available True if the label can be registered, false if already taken
     function available(string calldata label) public view returns (bool) {
         uint256 len = bytes(label).length;
         if (len < 3) return false;

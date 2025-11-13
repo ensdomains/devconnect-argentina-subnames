@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
+import {IL2Registry} from "@namestone/durin/interfaces/IL2Registry.sol";
 import {Registrar} from "../src/Registrar.sol";
 
 /*
@@ -16,6 +17,16 @@ forge create \
     contracts/src/Registrar.sol:Registrar \
     --constructor-args "${L2_REGISTRY_ADDRESS}" "${OWNER_ADDRESS}"
  */
+
+/* If need to verify separately:
+
+forge verify-contract \
+    0x03E2314ECf6075537B6a481009a30334fEFCef3a \
+    contracts/src/Registrar.sol:Registrar \
+    --guess-constructor-args \
+    --etherscan-api-key "$ETHERSCAN_API_KEY" \
+    --rpc-url "${RPC_URL}"
+ */
 contract RegistrarScript is Script {
     Registrar public registrar;
 
@@ -25,8 +36,8 @@ contract RegistrarScript is Script {
         vm.startBroadcast();
 
         registrar = new Registrar(
-            vm.envAddress("L2_REGISTRY_ADDRESS"), // Durin L2Registry for worldfair.eth on Base Sepolia
-            vm.envAddress("OWNER_ADDRESS") // New account to sponsor transactions
+            IL2Registry(vm.envAddress("L2_REGISTRY_ADDRESS")), // Durin L2Registry for worldfair.eth
+            vm.envAddress("OWNER_ADDRESS") // Relayer
         );
 
         vm.stopBroadcast();

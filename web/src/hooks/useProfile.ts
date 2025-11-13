@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { erc721Abi, namehash } from 'viem'
-import { baseSepolia, sepolia } from 'viem/chains'
+import { base, mainnet } from 'viem/chains'
 import { normalize } from 'viem/ens'
 import { getClient, getPublicClient } from 'wagmi/actions'
 
@@ -25,8 +25,8 @@ export async function getProfile(_label: string) {
   const label = normalize(_label)
   const name = `${label}.worldfair.eth`
 
-  const l1Client = getPublicClient(wagmiConfig, { chainId: sepolia.id })
-  const l2Client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
+  const l1Client = getPublicClient(wagmiConfig, { chainId: mainnet.id })
+  const l2Client = getPublicClient(wagmiConfig, { chainId: base.id })
 
   const owner = await l2Client.readContract({
     ...REGISTRY,

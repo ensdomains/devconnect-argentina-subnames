@@ -15,7 +15,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { sendTransaction, writeContract } from 'viem/actions'
 import { normalize } from 'viem/ens'
 import { getClient } from 'wagmi/actions'
-import { baseSepolia } from 'wagmi/chains'
+import { base } from 'wagmi/chains'
 import { z } from 'zod'
 
 import { nameFilter } from '@/lib/blocklist'
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     return Response.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const client = getClient(wagmiConfig, { chainId: baseSepolia.id }).extend(
+  const client = getClient(wagmiConfig, { chainId: base.id }).extend(
     publicActions
   )
 

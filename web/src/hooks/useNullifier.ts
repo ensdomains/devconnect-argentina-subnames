@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { getPublicClient } from 'wagmi/actions'
 
 import { REGISTRAR } from '@/lib/contracts'
@@ -15,7 +15,7 @@ export function useNullifier(nullifier?: bigint) {
     queryFn: async () => {
       if (!nullifier) return null
 
-      const client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
+      const client = getPublicClient(wagmiConfig, { chainId: base.id })
 
       const label = await client.readContract({
         ...REGISTRAR,

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { encodeFunctionData, namehash, toHex } from 'viem'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import {
   useSwitchChain,
   useWaitForTransactionReceipt,
@@ -100,13 +100,13 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
       return
     }
 
-    switchChain({ chainId: baseSepolia.id })
+    switchChain({ chainId: base.id })
 
     await tx.writeContractAsync({
       ...REGISTRY,
       functionName: 'multicall',
       args: [[...setTextCalls, ...setAddrCalls]],
-      chainId: baseSepolia.id,
+      chainId: base.id,
     })
   }
 

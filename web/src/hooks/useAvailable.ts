@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { baseSepolia } from 'viem/chains'
+import { base } from 'viem/chains'
 import { normalize } from 'viem/ens'
 import { getPublicClient } from 'wagmi/actions'
 
@@ -18,7 +18,7 @@ export function useAvailable(label: string) {
         return false
       }
 
-      const client = getPublicClient(wagmiConfig, { chainId: baseSepolia.id })
+      const client = getPublicClient(wagmiConfig, { chainId: base.id })
 
       return client.readContract({
         ...REGISTRAR,

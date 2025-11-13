@@ -1730,6 +1730,9 @@ const BLOCKLIST = [
   'ethereumr1',
   'mega',
   'megaeth',
+  'relayer',
+  'registry',
+  'registrar',
 ]
 
 export const nameFilter = new Filter()

@@ -1,8 +1,7 @@
-import { Address, parseAbi } from 'viem'
-import { base, baseSepolia } from 'viem/chains'
+import { parseAbi } from 'viem'
 
 export const REGISTRY = {
-  address: '0x39e628489e0ddcb1c4cc72c1c5447c1136dcda7a',
+  address: '0x3a8ee5a4410861f2f677c9cb4e69b6ef7092dddf',
   abi: [
     { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
     {
@@ -783,7 +782,7 @@ export const REGISTRY = {
 } as const
 
 export const REGISTRAR = {
-  address: '0xc9FEc1384068768cD3f500550EfaDA5a0bA56635',
+  address: '0x03E2314ECf6075537B6a481009a30334fEFCef3a',
   abi: [
     {
       inputs: [
@@ -916,8 +915,8 @@ export const RESOLVER_ABI = parseAbi([
 ])
 
 export const REVERSE_REGISTRAR = {
-  // address: '0x0000000000d8e504002cc26e3ec46d81971c1664', // Mainnet base.id
-  address: '0x00000BeEF055f7934784D6d81b6BC86665630dbA', // Testnet baseSepolia.id
+  address: '0x0000000000d8e504002cc26e3ec46d81971c1664', // Mainnet base.id
+  // address: '0x00000BeEF055f7934784D6d81b6BC86665630dbA', // Testnet baseSepolia.id
   abi: [
     {
       inputs: [
