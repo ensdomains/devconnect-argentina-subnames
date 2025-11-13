@@ -10,6 +10,11 @@ import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
+import { Hex, parseSignature, serializeSignature } from 'viem'
+import { baseSepolia } from 'viem/chains'
+import { normalize, toCoinType } from 'viem/ens'
+import { encodePacked, keccak256 } from 'viem/utils'
+import { useSignMessage } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
@@ -18,6 +23,7 @@ import { useAccount } from '@/hooks/useAccount'
 import { useAuth } from '@/hooks/useAuth'
 import { useAvailable } from '@/hooks/useAvailable'
 import { useNullifier } from '@/hooks/useNullifier'
+import { REVERSE_REGISTRAR } from '@/lib/contracts'
 
 export function Register() {
   // Local state
@@ -32,12 +38,25 @@ export function Register() {
 
   // Wallet
   const { openModal } = useModal()
-  const { address } = useAccount()
+  const { address, isEmbedded } = useAccount()
   const router = useRouter()
+  const reverseSignature = useSignMessage()
 
   // Registration mutation
   const registerMutation = useMutation({
-    mutationFn: async ({ label, owner }: { label: string; owner: string }) => {
+    mutationFn: async ({
+      label,
+      owner,
+      sigHash,
+      sigExpiry,
+      coinTypes,
+    }: {
+      label: string
+      owner: string
+      sigHash: Hex
+      sigExpiry: number
+      coinTypes: bigint[]
+    }) => {
       const res = await fetch('/api/relay/register', {
         method: 'POST',
         headers: {
@@ -46,6 +65,9 @@ export function Register() {
         body: JSON.stringify({
           label,
           owner,
+          sigHash,
+          sigExpiry,
+          coinTypes: coinTypes.map((coinType) => coinType.toString()),
         }),
       })
 
@@ -132,7 +154,9 @@ export function Register() {
                 type="submit"
                 className="uppercase"
                 disabled={
-                  !isAvailable.data === true || registerMutation.isPending
+                  !isAvailable.data === true ||
+                  registerMutation.isPending ||
+                  reverseSignature.isPending
                 }
                 onClick={async (e) => {
                   e.preventDefault()
@@ -142,13 +166,55 @@ export function Register() {
                     return
                   }
 
+                  // const sigExpiry = Math.floor(Date.now() / 1000) + 3600 - 12 // 1 hour - 1 block
+                  const sigExpiry = 1763058617
+                  const coinTypes = [BigInt(toCoinType(baseSepolia.id))]
+                  const sigContents = encodePacked(
+                    [
+                      'address',
+                      'bytes4',
+                      'address',
+                      'uint256',
+                      'string',
+                      'uint256[]',
+                    ],
+                    [
+                      REVERSE_REGISTRAR.address, // L2 reverse registrar
+                      '0x64752d0b', // selector of setNameForAddrWithSignature()
+                      address, // address of the account we're setting the reverse record for
+                      BigInt(sigExpiry), // signature expiry
+                      normalize(`${debouncedLabel}.worldfair.eth`), // name we're setting as the reverse record
+                      coinTypes, // coinTypes of the chains
+                    ]
+                  )
+
+                  if (!isEmbedded) {
+                    toast('Sign the message to claim your name', {
+                      icon: '✍️',
+                    })
+                  }
+
+                  // Sign a message that allows sponsoring setting reverse record
+                  let sigHash = await reverseSignature.signMessageAsync({
+                    message: { raw: keccak256(sigContents) },
+                  })
+
+                  // Offset the signature result for Para users
+                  if (isEmbedded) {
+                    const { r, s } = parseSignature(sigHash)
+                    sigHash = serializeSignature({ r, s, yParity: 1 })
+                  }
+
                   registerMutation.mutate({
                     label: debouncedLabel,
                     owner: address,
+                    sigHash,
+                    sigExpiry,
+                    coinTypes,
                   })
                 }}
               >
-                {registerMutation.isPending && (
+                {(reverseSignature.isPending || registerMutation.isPending) && (
                   <Loader2 className="animate-spin" size={16} />
                 )}
                 Claim

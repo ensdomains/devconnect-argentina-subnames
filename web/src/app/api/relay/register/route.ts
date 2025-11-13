@@ -6,6 +6,7 @@ import {
   encodeFunctionData,
   getAddress,
   isAddress,
+  isHex,
   namehash,
   parseEther,
   publicActions,
@@ -18,7 +19,7 @@ import { baseSepolia } from 'wagmi/chains'
 import { z } from 'zod'
 
 import { nameFilter } from '@/lib/blocklist'
-import { REGISTRAR, REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
+import { REGISTRAR, RESOLVER_ABI, REVERSE_REGISTRAR } from '@/lib/contracts'
 import { EVM_COIN_TYPES } from '@/lib/records'
 import { wagmiConfig } from '@/lib/wagmi'
 
@@ -27,6 +28,12 @@ import { getSession } from '../../auth/shared'
 const registerSchema = z.object({
   label: z.string().refine((label) => normalize(label)),
   owner: z.string().refine((address) => isAddress(address)),
+  sigHash: z
+    .string()
+    .refine((sigHash) => isHex(sigHash))
+    .optional(),
+  sigExpiry: z.number().optional(),
+  coinTypes: z.array(z.string()).optional(),
 })
 
 const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
@@ -34,8 +41,16 @@ const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
   const body = await req.json()
-  const { label, owner: _owner } = registerSchema.parse(body)
+  const {
+    label,
+    owner: _owner,
+    sigHash: _sigHash,
+    sigExpiry,
+    coinTypes: _coinTypes,
+  } = registerSchema.parse(body)
   const owner = getAddress(_owner)
+  const sigHash = isHex(_sigHash) ? _sigHash : undefined
+  const coinTypes = _coinTypes?.map((coinType) => BigInt(coinType))
 
   if (nameFilter.isProfane(label)) {
     return Response.json(
@@ -84,6 +99,28 @@ export async function POST(req: Request) {
       } catch (error) {
         // Silently failing is fine here because the main transaction still succeeded
         console.error(error)
+      }
+    }
+
+    // Set the reverse record
+    if (sigHash && sigExpiry && coinTypes) {
+      // ok so silently fail as well (but should find a graceful way to notify the frontend)
+      try {
+        await writeContract(client, {
+          ...REVERSE_REGISTRAR,
+          account: privateKeyToAccount(PRIVATE_KEY),
+          functionName: 'setNameForAddrWithSignature',
+          args: [
+            owner,
+            BigInt(sigExpiry),
+            `${label}.worldfair.eth`,
+            coinTypes,
+            sigHash,
+          ],
+        })
+        console.log('Set reverse record')
+      } catch (error) {
+        console.error('Failed to set reverse record', error)
       }
     }
 
