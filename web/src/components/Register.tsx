@@ -14,7 +14,7 @@ import { Hex, parseSignature, serializeSignature } from 'viem'
 import { base } from 'viem/chains'
 import { normalize, toCoinType } from 'viem/ens'
 import { encodePacked, keccak256 } from 'viem/utils'
-import { useSignMessage } from 'wagmi'
+import { useReadContract, useSignMessage } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
@@ -42,6 +42,13 @@ export function Register() {
   const router = useRouter()
   const reverseSignature = useSignMessage()
 
+  const { data: baseReverseRecord } = useReadContract({
+    ...REVERSE_REGISTRAR,
+    functionName: 'nameForAddr',
+    args: address ? [address] : undefined,
+  })
+  const hasReverseRecord = !!baseReverseRecord
+
   // Registration mutation
   const registerMutation = useMutation({
     mutationFn: async ({
@@ -53,9 +60,9 @@ export function Register() {
     }: {
       label: string
       owner: string
-      sigHash: Hex
-      sigExpiry: number
-      coinTypes: bigint[]
+      sigHash?: Hex
+      sigExpiry?: number
+      coinTypes?: bigint[]
     }) => {
       const res = await fetch('/api/relay/register', {
         method: 'POST',
@@ -67,7 +74,7 @@ export function Register() {
           owner,
           sigHash,
           sigExpiry,
-          coinTypes: coinTypes.map((coinType) => coinType.toString()),
+          coinTypes: coinTypes?.map((coinType) => coinType.toString()),
         }),
       })
 
@@ -166,42 +173,46 @@ export function Register() {
                     return
                   }
 
+                  // If the user doesn't already have a reverse record, set it
+                  let sigHash: Hex | undefined
                   const sigExpiry = Math.floor(Date.now() / 1000) + 3600 - 12 // 1 hour - 1 block
                   const coinTypes = [BigInt(toCoinType(base.id))]
-                  const sigContents = encodePacked(
-                    [
-                      'address',
-                      'bytes4',
-                      'address',
-                      'uint256',
-                      'string',
-                      'uint256[]',
-                    ],
-                    [
-                      REVERSE_REGISTRAR.address, // L2 reverse registrar
-                      '0x64752d0b', // selector of setNameForAddrWithSignature()
-                      address, // address of the account we're setting the reverse record for
-                      BigInt(sigExpiry), // signature expiry
-                      normalize(`${debouncedLabel}.worldfair.eth`), // name we're setting as the reverse record
-                      coinTypes, // coinTypes of the chains
-                    ]
-                  )
+                  if (!hasReverseRecord) {
+                    const sigContents = encodePacked(
+                      [
+                        'address',
+                        'bytes4',
+                        'address',
+                        'uint256',
+                        'string',
+                        'uint256[]',
+                      ],
+                      [
+                        REVERSE_REGISTRAR.address, // L2 reverse registrar
+                        '0x64752d0b', // selector of setNameForAddrWithSignature()
+                        address, // address of the account we're setting the reverse record for
+                        BigInt(sigExpiry), // signature expiry
+                        normalize(`${debouncedLabel}.worldfair.eth`), // name we're setting as the reverse record
+                        coinTypes, // coinTypes of the chains
+                      ]
+                    )
 
-                  if (!isEmbedded) {
-                    toast('Sign the message to claim your name', {
-                      icon: '✍️',
+                    if (!isEmbedded) {
+                      toast('Sign the message to claim your name', {
+                        icon: '✍️',
+                      })
+                    }
+
+                    // Sign a message that allows sponsoring setting reverse record
+                    sigHash = await reverseSignature.signMessageAsync({
+                      message: { raw: keccak256(sigContents) },
                     })
-                  }
 
-                  // Sign a message that allows sponsoring setting reverse record
-                  let sigHash = await reverseSignature.signMessageAsync({
-                    message: { raw: keccak256(sigContents) },
-                  })
-
-                  // Offset the signature result for Para users
-                  if (isEmbedded) {
-                    const { r, s } = parseSignature(sigHash)
-                    sigHash = serializeSignature({ r, s, yParity: 1 })
+                    // Offset the signature result for Para users
+                    if (isEmbedded) {
+                      const { r, s } = parseSignature(sigHash)
+                      sigHash = serializeSignature({ r, s, yParity: 1 })
+                    }
                   }
 
                   registerMutation.mutate({
