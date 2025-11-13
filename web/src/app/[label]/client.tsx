@@ -153,6 +153,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                   {[...GENERIC_TEXT_KEYS, ...SOCIAL_TEXT_KEYS].map((key) => (
                     <Input
                       key={key}
+                      className="bg-brand-dust"
                       name={`text:${key}`}
                       defaultValue={profile.texts[key]}
                       label={
@@ -171,6 +172,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
                   {ALL_COIN_TYPES.map((cointype) => (
                     <Input
                       key={cointype}
+                      className="bg-brand-dust"
                       name={`address:${cointype}`}
                       defaultValue={profile.addresses[cointype.toString()]}
                       label={getChainName(cointype)}
