@@ -79,6 +79,10 @@ export function EnsRecord({
           alt={label}
           width={16}
           height={16}
+          onError={(e) => {
+            // Remove img from the page
+            e.currentTarget.remove()
+          }}
         />
         @{value}
       </a>
@@ -131,7 +135,9 @@ function getSocialUrl(key: string, value: string) {
       return `https://github.com/${value}`
     case 'org.telegram':
       return `https://t.me/${value}`
+    case 'eth.farcaster':
+      return `https://farcaster.xyz/${value}`
+    default:
+      return value
   }
-
-  return value
 }
