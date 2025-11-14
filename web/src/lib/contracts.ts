@@ -782,7 +782,7 @@ export const REGISTRY = {
 } as const
 
 export const REGISTRAR = {
-  address: '0x306650175703769d13AC04A2411055091Df1C02C.',
+  address: '0x306650175703769d13AC04A2411055091Df1C02C',
   abi: [
     {
       inputs: [
