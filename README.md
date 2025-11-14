@@ -10,5 +10,5 @@ A "Registry" is an NFT collection that represents the ownership of a subname. A 
 | ------------ | --------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | Base Sepolia | Registry  | [0x39e628489e0ddcb1c4cc72c1c5447c1136dcda7a](https://sepolia.basescan.org/address/0x39e628489e0ddcb1c4cc72c1c5447c1136dcda7a) |
 | Base Sepolia | Registrar | [0xc9FEc1384068768cD3f500550EfaDA5a0bA56635](https://sepolia.basescan.org/address/0xc9FEc1384068768cD3f500550EfaDA5a0bA56635) |
-| Base         | Registry  | [0x3a8ee5a4410861f2f677c9cb4e69b6ef7092dddf](https://basescan.org/address/0x3a8ee5a4410861f2f677c9cb4e69b6ef7092dddf)         |
-| Base         | Registrar | [0x4D56236B70fF29Fa2395C8BCC6F812f9CB46a71a](https://basescan.org/address/0x4D56236B70fF29Fa2395C8BCC6F812f9CB46a71a)         |
+| Base         | Registry  | [0xd6a7dcdee200fa37f149323c0ad6b3698aa0e829](https://basescan.org/address/0xd6a7dcdee200fa37f149323c0ad6b3698aa0e829)         |
+| Base         | Registrar | [0x306650175703769d13AC04A2411055091Df1C02C.](https://basescan.org/address/0x306650175703769d13AC04A2411055091Df1C02C.)       |
