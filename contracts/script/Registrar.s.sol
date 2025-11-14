@@ -21,7 +21,7 @@ forge create \
 /* If need to verify separately:
 
 forge verify-contract \
-    0x03E2314ECf6075537B6a481009a30334fEFCef3a \
+    0x4D56236B70fF29Fa2395C8BCC6F812f9CB46a71a \
     contracts/src/Registrar.sol:Registrar \
     --guess-constructor-args \
     --etherscan-api-key "$ETHERSCAN_API_KEY" \

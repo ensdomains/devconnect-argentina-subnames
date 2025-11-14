@@ -55,19 +55,12 @@ contract Registrar is Ownable {
     }
 
     /// @notice Checks if a given label is available for registration
-    /// @dev Uses try-catch to handle the ERC721NonexistentToken error
     /// @param label The label to check availability for
     function available(string calldata label) public view returns (bool) {
         uint256 len = bytes(label).length;
         if (len < 3) return false;
 
         bytes32 node = REGISTRY.makeNode(BASE_NODE, label);
-        uint256 tokenId = uint256(node);
-
-        try REGISTRY.ownerOf(tokenId) {
-            return false;
-        } catch {
-            return true;
-        }
+        return REGISTRY.owner(node) == address(0);
     }
 }
