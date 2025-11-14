@@ -4,6 +4,7 @@ import { useModal } from '@getpara/react-sdk'
 import { Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
+import { formatEther } from 'viem'
 import {
   useBalance,
   useReadContract,
@@ -79,7 +80,8 @@ export default function ToolsPage() {
           <h2 className="text-brand-blue-dark text-2xl">Debugging info</h2>
           <pre>Address: {address}</pre>
           <pre>
-            Balance: {balance?.value} {balance?.symbol}
+            Balance:{' '}
+            {balance && `${formatEther(balance.value)} ${balance.symbol}`}
           </pre>
           <pre>Embedded wallet: {isEmbedded ? 'true' : 'false'}</pre>
           <pre>Name registered: {nameRegistered}</pre>
