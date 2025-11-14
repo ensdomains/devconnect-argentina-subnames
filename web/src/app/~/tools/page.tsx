@@ -1,9 +1,11 @@
 'use client'
 
 import { useModal } from '@getpara/react-sdk'
+import { Loader2 } from 'lucide-react'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import {
+  useBalance,
   useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
@@ -25,6 +27,7 @@ export default function ToolsPage() {
   const { openModal } = useModal()
   const disconnect = useDisconnect()
   const { address, isEmbedded } = useAccount()
+  const { data: balance } = useBalance({ address, chainId: base.id })
   const { data: registeredLabel } = useNullifier(auth.data?.nullifier)
   const nameRegistered = registeredLabel
     ? `${registeredLabel}.worldfair.eth`
@@ -48,12 +51,15 @@ export default function ToolsPage() {
   })
 
   useEffect(() => {
-    if (receipt.isSuccess) {
+    if (tx.isError) {
+      toast.error('Failed to submit transaction')
+      console.error(tx.error)
+    } else if (receipt.isSuccess) {
       toast.success('Reverse record set')
     } else if (receipt.isError) {
       toast.error('Failed to set reverse record')
     }
-  }, [receipt.status])
+  }, [tx.status, receipt.status])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -72,6 +78,9 @@ export default function ToolsPage() {
         <div>
           <h2 className="text-brand-blue-dark text-2xl">Debugging info</h2>
           <pre>Address: {address}</pre>
+          <pre>
+            Balance: {balance?.value} {balance?.symbol}
+          </pre>
           <pre>Embedded wallet: {isEmbedded ? 'true' : 'false'}</pre>
           <pre>Name registered: {nameRegistered}</pre>
           <pre>Reverse record: {baseReverseRecord}</pre>
@@ -94,6 +103,7 @@ export default function ToolsPage() {
               })
             }}
           >
+            {tx.isPending ? <Loader2 className="animate-spin" size={16} /> : ''}
             Set reverse record
           </Button>
         </div>

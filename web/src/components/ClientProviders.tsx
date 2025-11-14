@@ -3,7 +3,7 @@
 import { Environment, ParaProvider } from '@getpara/react-sdk'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { chains } from '@/lib/wagmi'
+import { chains, transports } from '@/lib/wagmi'
 
 const queryClient = new QueryClient()
 
@@ -30,6 +30,7 @@ export function ClientProviders({ children }: React.PropsWithChildren) {
           evmConnector: {
             config: {
               chains,
+              transports,
               ssr: true,
             },
           },
