@@ -28,42 +28,46 @@ export async function getProfile(_label: string) {
   const l1Client = getPublicClient(wagmiConfig, { chainId: mainnet.id })
   const l2Client = getPublicClient(wagmiConfig, { chainId: base.id })
 
-  const owner = await l2Client.readContract({
-    ...REGISTRY,
-    abi: erc721Abi,
-    functionName: 'ownerOf',
-    args: [BigInt(namehash(name))],
-  })
-
-  const addresses: Record<string, string> = {}
-  await Promise.all(
-    ALL_COIN_TYPES.map(async (coinType) => {
-      const address = await l1Client.getEnsAddress({
-        name,
-        coinType,
-      })
-      addresses[coinType.toString()] = address as string
+  try {
+    const owner = await l2Client.readContract({
+      ...REGISTRY,
+      abi: erc721Abi,
+      functionName: 'ownerOf',
+      args: [BigInt(namehash(name))],
     })
-  )
 
-  const texts: Record<string, string> = {}
-  await Promise.all(
-    [...GENERIC_TEXT_KEYS, ...SOCIAL_TEXT_KEYS].map(async (key) => {
-      const value = await l1Client.getEnsText({
-        name,
-        key,
+    const addresses: Record<string, string> = {}
+    await Promise.all(
+      ALL_COIN_TYPES.map(async (coinType) => {
+        const address = await l1Client.getEnsAddress({
+          name,
+          coinType,
+        })
+        addresses[coinType.toString()] = address as string
       })
-      texts[key] = value as string
-    })
-  )
+    )
 
-  return {
-    label,
-    name,
-    owner,
-    texts,
-    addresses,
+    const texts: Record<string, string> = {}
+    await Promise.all(
+      [...GENERIC_TEXT_KEYS, ...SOCIAL_TEXT_KEYS].map(async (key) => {
+        const value = await l1Client.getEnsText({
+          name,
+          key,
+        })
+        texts[key] = value as string
+      })
+    )
+
+    return {
+      label,
+      name,
+      owner,
+      texts,
+      addresses,
+    }
+  } catch (error) {
+    return null
   }
 }
 
-export type Profile = Awaited<ReturnType<typeof getProfile>>
+export type Profile = NonNullable<Awaited<ReturnType<typeof getProfile>>>

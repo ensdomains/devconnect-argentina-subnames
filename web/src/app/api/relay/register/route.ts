@@ -5,11 +5,10 @@ import {
   InsufficientFundsError,
   encodeFunctionData,
   getAddress,
-  isAddress,
-  isHex,
   namehash,
   parseEther,
   publicActions,
+  toHex,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sendTransaction, writeContract } from 'viem/actions'
@@ -26,14 +25,17 @@ import { wagmiConfig } from '@/lib/wagmi'
 import { getSession } from '../../auth/shared'
 
 const registerSchema = z.object({
-  label: z.string().refine((label) => normalize(label)),
-  owner: z.string().refine((address) => isAddress(address)),
+  label: z.string().transform((label) => normalize(label)),
+  owner: z.string().transform((address) => getAddress(address)),
   sigHash: z
     .string()
-    .refine((sigHash) => isHex(sigHash))
+    .transform((sigHash) => toHex(sigHash))
     .optional(),
   sigExpiry: z.number().optional(),
-  coinTypes: z.array(z.string()).optional(),
+  coinTypes: z
+    .array(z.string())
+    .transform((coinTypes) => coinTypes.map((coinType) => BigInt(coinType)))
+    .optional(),
 })
 
 const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
@@ -41,16 +43,8 @@ const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
   const body = await req.json()
-  const {
-    label,
-    owner: _owner,
-    sigHash: _sigHash,
-    sigExpiry,
-    coinTypes: _coinTypes,
-  } = registerSchema.parse(body)
-  const owner = getAddress(_owner)
-  const sigHash = isHex(_sigHash) ? _sigHash : undefined
-  const coinTypes = _coinTypes?.map((coinType) => BigInt(coinType))
+  const { label, owner, sigHash, sigExpiry, coinTypes } =
+    registerSchema.parse(body)
 
   if (nameFilter.isProfane(label)) {
     return Response.json(

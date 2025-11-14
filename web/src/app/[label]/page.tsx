@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+
 import { Footer } from '@/components/Footer'
 import { Nav } from '@/components/Nav'
 import { getProfile } from '@/hooks/useProfile'
@@ -11,6 +13,10 @@ export default async function Page({
 }) {
   const { label: _label } = await params
   const profile = await getProfile(_label)
+
+  if (!profile) {
+    return notFound()
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

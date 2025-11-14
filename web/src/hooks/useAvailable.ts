@@ -14,7 +14,9 @@ export function useAvailable(label: string) {
     enabled: !!label,
     queryKey: ['available', label],
     queryFn: async () => {
-      if (nameFilter.isProfane(label)) {
+      const normalizedLabel = normalize(label)
+
+      if (nameFilter.isProfane(normalizedLabel)) {
         return false
       }
 
@@ -23,7 +25,7 @@ export function useAvailable(label: string) {
       return client.readContract({
         ...REGISTRAR,
         functionName: 'available',
-        args: [normalize(label)],
+        args: [normalizedLabel],
       })
     },
   })

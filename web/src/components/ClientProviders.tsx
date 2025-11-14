@@ -14,6 +14,7 @@ export function ClientProviders({ children }: React.PropsWithChildren) {
         paraClientConfig={{
           apiKey: process.env.NEXT_PUBLIC_PARA_API_KEY!,
           env:
+            process.env.NEXT_PUBLIC_VERCEL_ENV === 'production' ||
             process.env.NODE_ENV === 'production'
               ? Environment.PROD
               : Environment.DEV,
