@@ -260,7 +260,7 @@ export function Register() {
 
 function Label({ children }: React.PropsWithChildren) {
   return (
-    <span className="text-brand-lapise-dense mt-1 ml-3 block font-mono text-xs uppercase">
+    <span className="text-brand-lapise-dense tracking-4 mt-1 ml-3 block font-mono text-xs tracking-wider uppercase">
       {children}
     </span>
   )
