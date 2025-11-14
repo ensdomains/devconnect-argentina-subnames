@@ -5,10 +5,10 @@ import {
   InsufficientFundsError,
   encodeFunctionData,
   getAddress,
+  isHex,
   namehash,
   parseEther,
   publicActions,
-  toHex,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sendTransaction, writeContract } from 'viem/actions'
@@ -29,7 +29,7 @@ const registerSchema = z.object({
   owner: z.string().transform((address) => getAddress(address)),
   sigHash: z
     .string()
-    .transform((sigHash) => toHex(sigHash))
+    .refine((sigHash) => isHex(sigHash))
     .optional(),
   sigExpiry: z.number().optional(),
   coinTypes: z
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     // Set the reverse record
     if (sigHash && sigExpiry && coinTypes) {
-      // ok so silently fail as well (but should find a graceful way to notify the frontend)
+      // ok to silently fail as well (but should find a graceful way to notify the frontend)
       try {
         await writeContract(client, {
           ...REVERSE_REGISTRAR,
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
             BigInt(sigExpiry),
             `${label}.worldfair.eth`,
             coinTypes,
-            sigHash,
+            sigHash as Hex,
           ],
         })
         console.log('Set reverse record')
