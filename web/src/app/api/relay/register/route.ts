@@ -119,6 +119,7 @@ export async function POST(req: Request) {
     }
 
     if (receipt.status === 'reverted') {
+      console.error('Transaction failed', receipt)
       return Response.json(
         {
           message: 'Transaction failed',
@@ -139,13 +140,17 @@ export async function POST(req: Request) {
       if (error.message.includes('NullifierAlreadyUsed')) {
         message = 'Your ticket has already been used to register a name.'
       }
+
+      console.log('Ticket nullifier already used', session.nullifierHashV4)
       return Response.json({ message }, { status: 500 })
     }
 
     if (error instanceof InsufficientFundsError) {
+      console.error('Insufficient funds', error)
       return Response.json({ message: 'Insufficient funds' }, { status: 500 })
     }
 
+    console.error('Failed to register name', error)
     return Response.json(
       { message: 'Failed to register name' },
       { status: 500 }
