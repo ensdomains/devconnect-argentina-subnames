@@ -2,6 +2,7 @@
 
 import { useModal } from '@getpara/react-sdk'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { encodeFunctionData, namehash, toHex } from 'viem'
@@ -37,6 +38,9 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
   const [isEditMode, setIsEditMode] = useState(false)
   const tx = useWriteContract()
   const receipt = useWaitForTransactionReceipt({ hash: tx.data })
+  const searchParams = useSearchParams()
+  const mode = searchParams.get('mode')
+  const router = useRouter()
 
   // Profile should default to the server profile but get updated in real time
   const { data: _clientProfile, refetch: refetchProfile } = useProfile(
@@ -53,9 +57,14 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
     }
   }, [receipt.isSuccess])
 
-  // TODO: Jump straight into edit mode if the user is the owner and they come straight from registration
+  // Jump straight into edit mode if the user is the owner and they come straight from registration
   // Then remove the query param
-  useEffect(() => {}, [])
+  useEffect(() => {
+    if (mode === 'edit' && address && address === profile.owner) {
+      setIsEditMode(true)
+      router.replace(`/${_serverProfile.label}`)
+    }
+  }, [mode, address, profile.owner])
 
   async function handleSaveEdits(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
