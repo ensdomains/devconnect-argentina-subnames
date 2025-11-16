@@ -8,21 +8,17 @@ import {
   isHex,
   namehash,
   parseEther,
-  publicActions,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
-import { sendTransaction, writeContract } from 'viem/actions'
 import { normalize } from 'viem/ens'
-import { getClient } from 'wagmi/actions'
-import { base } from 'wagmi/chains'
 import { z } from 'zod'
 
 import { nameFilter } from '@/lib/blocklist'
 import { REGISTRAR, RESOLVER_ABI, REVERSE_REGISTRAR } from '@/lib/contracts'
 import { EVM_COIN_TYPES } from '@/lib/records'
-import { wagmiConfig } from '@/lib/wagmi'
 
 import { getSession } from '../../auth/shared'
+import { PRIVATE_KEY, relayClient } from '../shared'
 
 const registerSchema = z.object({
   label: z.string().transform((label) => normalize(label)),
@@ -37,8 +33,6 @@ const registerSchema = z.object({
     .transform((coinTypes) => coinTypes.map((coinType) => BigInt(coinType)))
     .optional(),
 })
-
-const PRIVATE_KEY = process.env.RELAYER_PRIVATE_KEY as Hex
 
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
@@ -58,14 +52,15 @@ export async function POST(req: Request) {
     return Response.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const client = getClient(wagmiConfig, { chainId: base.id }).extend(
-    publicActions
-  )
+  const account = privateKeyToAccount(PRIVATE_KEY)
+  let startingNonce = await relayClient.getTransactionCount({
+    address: account.address,
+  })
 
   try {
-    const tx = await writeContract(client, {
+    const tx = await relayClient.writeContract({
       ...REGISTRAR,
-      account: privateKeyToAccount(PRIVATE_KEY),
+      account,
       functionName: 'register',
       args: [
         label,
@@ -73,18 +68,20 @@ export async function POST(req: Request) {
         getResolverCalls(label, owner),
         BigInt(session.nullifierHashV4),
       ],
+      nonce: startingNonce++,
     })
 
-    const receipt = await client.waitForTransactionReceipt({ hash: tx })
+    const receipt = await relayClient.waitForTransactionReceipt({ hash: tx })
 
     // If the user doesn't have any ETH, send a tiny amount to cover the gas on profile configuration
-    const ethBalance = await client.getBalance({ address: owner })
+    const ethBalance = await relayClient.getBalance({ address: owner })
     if (ethBalance === BigInt(0)) {
       try {
-        const transferTx = await sendTransaction(client, {
-          account: privateKeyToAccount(PRIVATE_KEY),
+        const transferTx = await relayClient.sendTransaction({
+          account,
           to: owner,
           value: parseEther('0.000005'),
+          nonce: startingNonce++,
         })
         console.log(
           'Sent ETH to cover gas on profile configuration',
@@ -100,9 +97,9 @@ export async function POST(req: Request) {
     if (sigHash && sigExpiry && coinTypes) {
       // ok to silently fail as well (but should find a graceful way to notify the frontend)
       try {
-        await writeContract(client, {
+        await relayClient.writeContract({
           ...REVERSE_REGISTRAR,
-          account: privateKeyToAccount(PRIVATE_KEY),
+          account,
           functionName: 'setNameForAddrWithSignature',
           args: [
             owner,
@@ -111,6 +108,7 @@ export async function POST(req: Request) {
             coinTypes,
             sigHash as Hex,
           ],
+          nonce: startingNonce++,
         })
         console.log('Set reverse record')
       } catch (error) {
@@ -141,7 +139,7 @@ export async function POST(req: Request) {
         message = 'Your ticket has already been used to register a name.'
       }
 
-      console.log('Ticket nullifier already used', session.nullifierHashV4)
+      console.error(error, session.nullifierHashV4)
       return Response.json({ message }, { status: 500 })
     }
 

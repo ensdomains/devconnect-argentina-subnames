@@ -5,11 +5,16 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import toast from 'react-hot-toast'
 
+import { useAccount } from '@/hooks/useAccount'
+import { useDisconnect } from '@/hooks/useDisconnect'
+
 import { Button } from './Button'
 
 export function Nav() {
   const pathname = usePathname()
   const isHome = pathname === '/'
+  const disconnect = useDisconnect()
+  const { isConnected } = useAccount()
 
   return (
     <nav className="flex items-center justify-between p-4">
@@ -26,6 +31,10 @@ export function Nav() {
         >
           Share
         </Button>
+      )}
+
+      {isHome && isConnected && (
+        <Button onClick={() => disconnect()}>Disconnect</Button>
       )}
     </nav>
   )

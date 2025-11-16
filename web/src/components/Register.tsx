@@ -175,8 +175,9 @@ export function Register() {
 
                   // If the user doesn't already have a reverse record, set it
                   let sigHash: Hex | undefined
-                  const sigExpiry = Math.floor(Date.now() / 1000) + 3600 - 12 // 1 hour - 1 block
+                  const sigExpiry = Math.floor(Date.now() / 1000) + 600 // 10 mins
                   const coinTypes = [BigInt(toCoinType(base.id))]
+
                   if (!hasReverseRecord) {
                     const sigContents = encodePacked(
                       [
