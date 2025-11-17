@@ -62,7 +62,7 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
   useEffect(() => {
     if (mode === 'edit' && address && address === profile.owner) {
       setIsEditMode(true)
-      router.replace(`/${_serverProfile.label}`)
+      router.replace(`/${_serverProfile.label}`, { scroll: false })
     }
   }, [mode, address, profile.owner])
 
@@ -134,19 +134,22 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
             <img
               src={profile.texts?.['avatar']}
               alt={profile.label}
-              className="h-24 w-24 rounded-full"
-              width={96}
-              height={96}
+              className="h-18 w-18 min-w-18 rounded-full"
+              width={72}
+              height={72}
             />
           ) : (
-            <div className="from-brand-blue-light to-brand-blue h-24 w-24 rounded-full bg-linear-to-tl" />
+            <div className="from-brand-blue-light to-brand-blue h-18 w-18 min-w-18 rounded-full bg-linear-to-tl" />
           )}
 
-          <div className="text-brand-lapise-dense flex flex-col gap-y-2">
+          <div className="text-brand-lapise-dense flex flex-col gap-y-1">
             <span className="text-brand-blue font-mono text-xs font-medium uppercase">
               ENS Quest Completed!
             </span>
-            <h1 className="text-2xl">{profile.name}</h1>
+            <h1 className="flex flex-wrap text-2xl leading-6">
+              <span>{profile.label}</span>
+              <span>.worldfair.eth</span>
+            </h1>
           </div>
         </div>
 
