@@ -14,7 +14,7 @@ import { Hex, parseSignature, serializeSignature } from 'viem'
 import { base } from 'viem/chains'
 import { normalize, toCoinType } from 'viem/ens'
 import { encodePacked, keccak256 } from 'viem/utils'
-import { useReadContract, useSignMessage } from 'wagmi'
+import { useReadContract, useSignMessage, useSwitchChain } from 'wagmi'
 
 import { ZAPP, ZUPASS_PROOF_REQUEST } from '@/app/api/auth/constants'
 import { Button } from '@/components/Button'
@@ -38,9 +38,10 @@ export function Register() {
 
   // Wallet
   const { openModal } = useModal()
-  const { address, isEmbedded } = useAccount()
+  const { address, isEmbedded, isAuthed } = useAccount()
   const router = useRouter()
   const reverseSignature = useSignMessage()
+  const { switchChainAsync } = useSwitchChain()
 
   const { data: baseReverseRecord } = useReadContract({
     ...REVERSE_REGISTRAR,
@@ -103,6 +104,7 @@ export function Register() {
       <div>
         <Button
           size="large"
+          className="mb-2"
           onClick={async () => {
             setIsZupassLoading(true)
 
@@ -147,7 +149,7 @@ export function Register() {
 
   return (
     <div>
-      <form className="flex items-center gap-x-2">
+      <form className="mb-2 flex flex-col items-center gap-2">
         <Input
           suffix={
             <span className="text-brand-grey font-medium">.worldfair.eth</span>
@@ -156,11 +158,32 @@ export function Register() {
           onChange={(e) => setLabel(e.target.value)}
         />
 
+        <Label>
+          {isAvailable.isLoading && (
+            <Loader2 className="animate-spin" size={16} />
+          )}
+          {isAvailable.isError && 'Error checking availability'}
+          {isAvailable.data === true && 'Available'}
+          {isAvailable.data === false && 'Not available'}
+          {debouncedLabel === '' && 'Enter a name to register'}
+        </Label>
+
         {(() => {
-          if (address) {
+          if (isEmbedded && !isAuthed) {
             return (
               <Button
-                size="small"
+                size="large"
+                type="button"
+                className="uppercase"
+                disabled={reverseSignature.isPending}
+              >
+                Disconnect and try again
+              </Button>
+            )
+          } else if (address) {
+            return (
+              <Button
+                size="large"
                 type="submit"
                 className="uppercase"
                 disabled={
@@ -208,6 +231,7 @@ export function Register() {
                     }
 
                     // Sign a message that allows sponsoring setting reverse record
+                    await switchChainAsync({ chainId: base.id })
                     sigHash = await reverseSignature.signMessageAsync({
                       message: { raw: keccak256(sigContents) },
                     })
@@ -239,33 +263,23 @@ export function Register() {
 
           return (
             <Button
-              size="small"
+              size="large"
               type="button"
               className="uppercase"
               onClick={() => openModal()}
             >
-              Connect
+              Connect with Devconnect Email Or External Wallet
             </Button>
           )
         })()}
       </form>
-
-      <Label>
-        {isAvailable.isLoading && (
-          <Loader2 className="animate-spin" size={16} />
-        )}
-        {isAvailable.isError && 'Error checking availability'}
-        {isAvailable.data === true && 'Available'}
-        {isAvailable.data === false && 'Not available'}
-        {debouncedLabel === '' && 'Enter a name to register'}
-      </Label>
     </div>
   )
 }
 
 function Label({ children }: React.PropsWithChildren) {
   return (
-    <span className="text-brand-lapise-dense tracking-4 mt-1 ml-3 block font-mono text-xs tracking-wider uppercase">
+    <span className="text-brand-lapise-dense tracking-4 block text-center font-mono text-xs tracking-wider uppercase">
       {children}
     </span>
   )

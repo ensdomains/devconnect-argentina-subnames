@@ -21,7 +21,7 @@ export function Button({
   return (
     <Comp
       className={cn(
-        'flex items-center justify-center gap-2 rounded-md py-2.5 font-mono text-sm font-medium text-white disabled:cursor-not-allowed',
+        'flex items-center justify-center gap-2 rounded-md py-2.5 text-center font-mono text-sm leading-tight font-medium text-white disabled:cursor-not-allowed',
         'focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive outline-none focus-visible:ring-2',
         size === 'small' && 'w-fit px-4',
         size === 'medium' && 'w-fit px-8',
