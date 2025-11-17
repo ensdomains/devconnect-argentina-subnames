@@ -32,13 +32,16 @@ const registerSchema = z.object({
     .array(z.string())
     .transform((coinTypes) => coinTypes.map((coinType) => BigInt(coinType)))
     .optional(),
+  isEmbedded: z.boolean(),
 })
 
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
   const body = await req.json()
-  const { label, owner, sigHash, sigExpiry, coinTypes } =
+  const { label, owner, sigHash, sigExpiry, coinTypes, isEmbedded } =
     registerSchema.parse(body)
+
+  console.log({ isEmbedded })
 
   if (nameFilter.isProfane(label)) {
     return Response.json(

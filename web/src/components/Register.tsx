@@ -57,12 +57,14 @@ export function Register() {
       sigHash,
       sigExpiry,
       coinTypes,
+      isEmbedded,
     }: {
       label: string
       owner: string
       sigHash?: Hex
       sigExpiry?: number
       coinTypes?: bigint[]
+      isEmbedded: boolean
     }) => {
       const res = await fetch('/api/relay/register', {
         method: 'POST',
@@ -75,6 +77,7 @@ export function Register() {
           sigHash,
           sigExpiry,
           coinTypes: coinTypes?.map((coinType) => coinType.toString()),
+          isEmbedded,
         }),
       })
 
@@ -222,6 +225,7 @@ export function Register() {
                     sigHash,
                     sigExpiry,
                     coinTypes,
+                    isEmbedded,
                   })
                 }}
               >
