@@ -203,55 +203,55 @@ export function Register() {
                   }
 
                   // If the user doesn't already have a reverse record, set it
-                  // let sigHash: Hex | undefined
-                  // const sigExpiry = Math.floor(Date.now() / 1000) + 600 // 10 mins
-                  // const coinTypes = [BigInt(toCoinType(base.id))]
+                  let sigHash: Hex | undefined
+                  const sigExpiry = Math.floor(Date.now() / 1000) + 600 // 10 mins
+                  const coinTypes = [BigInt(toCoinType(base.id))]
 
-                  // if (!hasReverseRecord) {
-                  //   const sigContents = encodePacked(
-                  //     [
-                  //       'address',
-                  //       'bytes4',
-                  //       'address',
-                  //       'uint256',
-                  //       'string',
-                  //       'uint256[]',
-                  //     ],
-                  //     [
-                  //       REVERSE_REGISTRAR.address, // L2 reverse registrar
-                  //       '0x64752d0b', // selector of setNameForAddrWithSignature()
-                  //       address, // address of the account we're setting the reverse record for
-                  //       BigInt(sigExpiry), // signature expiry
-                  //       normalize(`${debouncedLabel}.worldfair.eth`), // name we're setting as the reverse record
-                  //       coinTypes, // coinTypes of the chains
-                  //     ]
-                  //   )
+                  if (!hasReverseRecord) {
+                    const sigContents = encodePacked(
+                      [
+                        'address',
+                        'bytes4',
+                        'address',
+                        'uint256',
+                        'string',
+                        'uint256[]',
+                      ],
+                      [
+                        REVERSE_REGISTRAR.address, // L2 reverse registrar
+                        '0x64752d0b', // selector of setNameForAddrWithSignature()
+                        address, // address of the account we're setting the reverse record for
+                        BigInt(sigExpiry), // signature expiry
+                        normalize(`${debouncedLabel}.worldfair.eth`), // name we're setting as the reverse record
+                        coinTypes, // coinTypes of the chains
+                      ]
+                    )
 
-                  //   if (!isEmbedded) {
-                  //     toast('Sign the message to claim your name', {
-                  //       icon: '✍️',
-                  //     })
-                  //   }
+                    if (!isEmbedded) {
+                      toast('Sign the message to claim your name', {
+                        icon: '✍️',
+                      })
+                    }
 
-                  //   // Sign a message that allows sponsoring setting reverse record
-                  //   await switchChainAsync({ chainId: base.id })
-                  //   sigHash = await reverseSignature.signMessageAsync({
-                  //     message: { raw: keccak256(sigContents) },
-                  //   })
+                    // Sign a message that allows sponsoring setting reverse record
+                    await switchChainAsync({ chainId: base.id })
+                    sigHash = await reverseSignature.signMessageAsync({
+                      message: { raw: keccak256(sigContents) },
+                    })
 
-                  //   // Offset the signature result for Para users
-                  //   if (isEmbedded) {
-                  //     const { r, s } = parseSignature(sigHash)
-                  //     sigHash = serializeSignature({ r, s, yParity: 1 })
-                  //   }
-                  // }
+                    // Offset the signature result for Para users
+                    if (isEmbedded) {
+                      const { r, s } = parseSignature(sigHash)
+                      sigHash = serializeSignature({ r, s, yParity: 1 })
+                    }
+                  }
 
                   registerMutation.mutate({
                     label: debouncedLabel,
                     owner: address,
-                    // sigHash,
-                    // sigExpiry,
-                    // coinTypes,
+                    sigHash,
+                    sigExpiry,
+                    coinTypes,
                     isEmbedded,
                   })
                 }}

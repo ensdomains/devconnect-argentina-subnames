@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { encodeFunctionData, namehash, toHex } from 'viem'
+import { Address, encodeFunctionData, namehash, toHex } from 'viem'
 import { base } from 'viem/chains'
 import {
+  useReadContract,
   useSwitchChain,
   useWaitForTransactionReceipt,
   useWriteContract,
@@ -19,7 +20,7 @@ import { Input } from '@/components/Input'
 import { useAccount } from '@/hooks/useAccount'
 import { useDisconnect } from '@/hooks/useDisconnect'
 import { Profile, useProfile } from '@/hooks/useProfile'
-import { REGISTRY, RESOLVER_ABI } from '@/lib/contracts'
+import { REGISTRY, RESOLVER_ABI, REVERSE_REGISTRAR } from '@/lib/contracts'
 import {
   ALL_COIN_TYPES,
   GENERIC_TEXT_KEYS,
@@ -121,6 +122,8 @@ export function Client({ profile: _serverProfile }: { profile: Profile }) {
 
   return (
     <>
+      <HiddenReverseSetter owner={profile.owner} name={profile.name} />
+
       <main
         className="bg-brand-dust flex flex-1 flex-col gap-y-6 px-4 py-6"
         style={{
@@ -379,4 +382,57 @@ function ActionButton({
       )}
     </div>
   )
+}
+
+// If the connected account is the owner of the name AND it doesn't have a reverse record, set it in the background
+function HiddenReverseSetter({
+  owner,
+  name,
+}: {
+  owner: Address
+  name: string
+}) {
+  const { address, isEmbedded, isAuthed } = useAccount()
+  const { switchChainAsync } = useSwitchChain()
+  const tx = useWriteContract()
+
+  const { data: baseReverseRecord } = useReadContract({
+    ...REVERSE_REGISTRAR,
+    functionName: 'nameForAddr',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
+  })
+
+  const hasReverseRecord = !!baseReverseRecord
+
+  async function setReverseRecord() {
+    await switchChainAsync({ chainId: base.id })
+    const hash = await tx.writeContractAsync({
+      ...REVERSE_REGISTRAR,
+      functionName: 'setName',
+      args: [name],
+      chainId: base.id,
+    })
+
+    console.log('Reverse record set', hash)
+  }
+
+  useEffect(() => {
+    if (isEmbedded && isAuthed) {
+      console.log('Using embedded wallet')
+      if (address === owner) {
+        console.log('Wallet owns the name')
+        if (!hasReverseRecord) {
+          setReverseRecord()
+          console.log('Setting reverse record')
+        } else {
+          console.log('Reverse record already set')
+        }
+      }
+    }
+  }, [isEmbedded, isAuthed, address, owner, hasReverseRecord])
+
+  return null
 }

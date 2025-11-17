@@ -24,8 +24,8 @@ export function getChainName(cointype: bigint) {
 // These will all be fetched for the profile page
 export const ALL_COIN_TYPES = [
   ...EVM_COIN_TYPES,
-  BigInt(0), // BTC
-  BigInt(501), // SOL
+  // BigInt(0), // BTC
+  // BigInt(501), // SOL
 ]
 
 // These will be displayed on the profile and available for editing
