@@ -5,9 +5,13 @@ import {
   InsufficientFundsError,
   encodeFunctionData,
   getAddress,
+  hashMessage,
   isHex,
   namehash,
   parseEther,
+  parseSignature,
+  recoverAddress,
+  serializeSignature,
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { normalize } from 'viem/ens'
@@ -38,8 +42,16 @@ const registerSchema = z.object({
 // Submit transactions to approved contracts for authorized users (ticket holders)
 export async function POST(req: Request) {
   const body = await req.json()
-  const { label, owner, sigHash, sigExpiry, coinTypes, isEmbedded } =
-    registerSchema.parse(body)
+  const {
+    label,
+    owner,
+    sigHash: _sigHash,
+    sigExpiry,
+    coinTypes,
+    isEmbedded,
+  } = registerSchema.parse(body)
+
+  let sigHash: Hex | undefined = _sigHash as Hex
 
   console.log({ isEmbedded })
 
@@ -98,6 +110,29 @@ export async function POST(req: Request) {
 
     // Set the reverse record
     if (sigHash && sigExpiry && coinTypes) {
+      if (isEmbedded) {
+        const { r, s } = parseSignature(sigHash)
+
+        // Try BOTH yParity values
+        const attempts = [
+          serializeSignature({ r, s, yParity: 0 }),
+          serializeSignature({ r, s, yParity: 1 }),
+        ]
+
+        // Recover address for each
+        const correct = attempts.find(async (attempt) => {
+          const recovered = await recoverAddress({
+            hash: hashMessage({ raw: sigHash! }),
+            signature: attempt,
+          })
+
+          return recovered === owner
+        })
+
+        // Use the correct one
+        sigHash = correct
+      }
+
       // ok to silently fail as well (but should find a graceful way to notify the frontend)
       try {
         await relayClient.writeContract({
@@ -109,7 +144,7 @@ export async function POST(req: Request) {
             BigInt(sigExpiry),
             `${label}.worldfair.eth`,
             coinTypes,
-            sigHash as Hex,
+            sigHash!,
           ],
           nonce: startingNonce++,
         })

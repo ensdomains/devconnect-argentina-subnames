@@ -10,7 +10,7 @@ import React, { useState } from 'react'
 import { toast } from 'react-hot-toast'
 import superjson from 'superjson'
 import { useDebounce } from 'use-debounce'
-import { Hex, parseSignature, serializeSignature } from 'viem'
+import { Hex } from 'viem'
 import { base } from 'viem/chains'
 import { normalize, toCoinType } from 'viem/ens'
 import { encodePacked, keccak256 } from 'viem/utils'
@@ -238,12 +238,6 @@ export function Register() {
                     sigHash = await reverseSignature.signMessageAsync({
                       message: { raw: keccak256(sigContents) },
                     })
-
-                    // Offset the signature result for Para users
-                    if (isEmbedded) {
-                      const { r, s } = parseSignature(sigHash)
-                      sigHash = serializeSignature({ r, s, yParity: 1 })
-                    }
                   }
 
                   registerMutation.mutate({
